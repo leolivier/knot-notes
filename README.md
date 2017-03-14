@@ -1,4 +1,7 @@
-# Angunotes
+# knot-note
+Yet another note editor (written with angular)
+
+To install, first run 'npm install' then follow below instructions.
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0-beta.31.
 
