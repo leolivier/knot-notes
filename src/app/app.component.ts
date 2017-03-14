@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'Angular Notes';
+  title = 'Knot Notes';
   menuValues = [
   	{ value:"notes", label: "All Notes" },
   	{ value:"settings", label:"Settings"}

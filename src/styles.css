@@ -59,6 +59,11 @@ nav a.active {
   color: #039be5;
 }
 
+.icon {
+  width: 48px;
+  height: 48px;
+  vertical-align: bottom;
+}
 /* items class */
 .items {
   margin: 0 0 2em 0;

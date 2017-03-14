@@ -42,9 +42,7 @@
         "../node_modules/tinymce/plugins/fullscreen/plugin.js",
         "../node_modules/tinymce/plugins/insertdatetime/plugin.js",
         "../node_modules/tinymce/plugins/media/plugin.js",
-        "../node_modules/tinymce/plugins/table/plugin.js",
-        "../node_modules/tinymce/plugins/contextmenu/plugin.js",
-        "../node_modules/tinymce/plugins/paste/plugin.js"
+        "../node_modules/tinymce/plugins/contextmenu/plugin.js"
       ],
       "environments": {
         "source": "environments/environment.ts",
