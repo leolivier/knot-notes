@@ -1,0 +1,15 @@
+<div class="tree-wrapper">
+	<Tree #notebookTree [nodes]="rootNotebook" [focused]="true"  
+			(onActivate)="selectNotebook($event)" [options]="customTemplateStringOptions" class="notebookTree">
+	 <template #treeNodeTemplate let-node="node" let-index="index">
+	    <span *ngIf="!isEditable(node.data.id)" (dblclick)="startEdition(node.data.id)">{{ node.data.name }}</span>
+	    <input *ngIf="isEditable(node.data.id)" [(ngModel)]="node.data.name" 
+	    	placeholder="notebook name" (keyup)="checkEndEdition($event)" (blur)="endEdition()">
+	    <span class="an-pull-right">
+		    <button (click)="addNotebook($event, node.data)"><i class="fa fa-plus-square"></i></button>
+		    <button (click)="deleteNotebook($event, node.data)"><i class="fa fa-trash-o"></i></button>
+		    <!--button (click)="toggleEdition(node.data.id)"><i class="fa fa-pencil-square-o"></i></button-->
+		</span>
+	  </template> 
+	</Tree>
+</div>

@@ -1,0 +1,6 @@
+<div *ngIf="note" class="note-editor-container">
+	<header>Click in text to edit...</header>
+	<div class="note-editor-wrapper">
+		<div id={{editorId}} class="node-editor" rows="20">{{_note.content}}</div>
+	</div>
+</div>

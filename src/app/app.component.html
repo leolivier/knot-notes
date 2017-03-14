@@ -1,0 +1,6 @@
+<header>
+	<span class="title">{{title}}</span>
+	<app-menu [values]="menuValues" [position]="'right'" (onSelect)="action($event)"></app-menu>
+</header>
+
+<router-outlet></router-outlet>

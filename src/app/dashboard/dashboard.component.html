@@ -1,0 +1,9 @@
+<div class="grid grid-pad">
+  <div class="col-1">
+    <div class="module"><app-notebook-tree (onSelectedNotebook)="selectedNotebook=$event"></app-notebook-tree></div>
+    <div class="module"><app-notebook-show (onSelectedNote)="selectedNote=$event; editMode=false" [notebook]="selectedNotebook"></app-notebook-show></div>
+  </div>
+  <div class="col-2">
+      <app-note-editor *ngIf="selectedNote" [note]="selectedNote" [editorId]="'note_editor'"></app-note-editor>
+  </div>
+</div>
