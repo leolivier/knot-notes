@@ -1,6 +1,12 @@
 # knot-note
-Yet another note editor (written with angular)
+Yet another note editor (more or less evernot like)...
+This one is written with angular.
 
+__Currently, it is not yet usable!__
+
+When finished, it should be able to store the notes locally in the browser database and be synchronized with a CouchDB (or Couchbase or Cloudant as you like) database server so that you can use it on different devices and yoy can share your notes with otehr people.
+
+## Installation
 To install, first run 'npm install' then follow below instructions.
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0-beta.31.
