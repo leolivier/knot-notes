@@ -44,6 +44,13 @@
         "../node_modules/tinymce/plugins/media/plugin.js",
         "../node_modules/tinymce/plugins/contextmenu/plugin.js"
       ],
+      "packages": [
+      {
+        "PouchDB": {
+          "main": "pouchdb.js",
+          "defaultExtension": "js"
+        }
+      }],
       "environments": {
         "source": "environments/environment.ts",
         "dev": "environments/environment.ts",

@@ -13,7 +13,7 @@ export class NoteService {
   private noteUrl = 'api/note';  // URL to web api for notes
   private headers = new Headers({'Content-Type': 'application/json'});
 
-  constructor(private http: Http) { }
+  constructor(private http: Http) {}
 
   private handleError(error: any): Promise<any> {
     console.error('An error occurred', error); // for demo purposes only
@@ -39,7 +39,11 @@ export class NoteService {
       .catch(this.handleError);
   }
 
-  getNotebookNotes(notebookid: number): Promise<Note[]> {
+  getNotebook(notebookid: string): Promise<Notebook> {
+    return this.getRootNotebook().then((root: Notebook) => root.findById(notebookid));
+  }
+
+  getNotebookNotes(notebookid: string): Promise<Note[]> {
     const url = `${this.noteUrl}?notebookid=${notebookid}`;
     return this.http.get(url)
                .toPromise()

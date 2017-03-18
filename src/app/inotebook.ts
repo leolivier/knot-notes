@@ -1,6 +1,6 @@
 export interface INotebook {
-	id: number;
+	id: string;
 	name: string;
 	children: INotebook[];
-	findById(id: number): INotebook;
+	findById(id: string): INotebook;
 }

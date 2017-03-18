@@ -1,11 +1,9 @@
-import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
-//import { Router } from '@angular/router';
-import { ActivatedRoute, Params } from '@angular/router';
-import { Location }               from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Note, NoteType } from '../../note';
 import { Notebook } from '../../notebook';
-import { NoteService } from '../../note.service';
+//import { NoteService } from '../../note.service';
+import { DataService } from '../../data.service';
 
 @Component({
   moduleId: module.id,
@@ -13,7 +11,7 @@ import { NoteService } from '../../note.service';
   templateUrl: './notebook-show.component.html',
   styleUrls: ['./notebook-show.component.css']
 })
-export class NotebookShowComponent implements OnInit {
+export class NotebookShowComponent {
 
   private _editableNote: Note;
   private _previousTitle: string;
@@ -33,17 +31,8 @@ export class NotebookShowComponent implements OnInit {
   notes: Note[];
   selectedNote: Note;
 
-  constructor(
-    private route: ActivatedRoute,
-    private location: Location,
-    private noteService: NoteService) { }
-
-  ngOnInit(): void {
-/*    this.route.params
-      .switchMap((params: Params) => this.noteService.getNotebookNotes(+params['id']))
-      .subscribe(notes => this.notes = notes); 
-*/
-  }
+//  constructor(private noteService: NoteService) { }
+  constructor(private noteService: DataService) {}
 
   name(): string {
     return (this.currentNotebook? this.currentNotebook.fullName() : "no selection");
@@ -80,7 +69,8 @@ export class NotebookShowComponent implements OnInit {
     this._editableNote = null;
     this._previousTitle = "";
     // save the notebook tree
-    this.noteService.updateNote(n);
+//    this.noteService.updateNote(n);
+    this.noteService.saveNote(n);
   }
 
   checkEndEdition($event, n: Note): void {
@@ -88,17 +78,13 @@ export class NotebookShowComponent implements OnInit {
     else if ($event.key === "Escape") this.cancelEdition(n);
   }
 
-  getId(): number {
-    return Math.ceil(Math.random()*10000000);
-  }
-
   newNote(): void {
-    // create a default new note with a random id and a predefined name
-    const newid = this.getId();
-    const newn: Note = { id: newid, title: "new note", notebookid: this.currentNotebook.id, content: "", type: NoteType.Text, tags:[] };
+    // create a default new note with a predefined name in the current notebook
+    const newn: Note = new Note({ notebookid: this.currentNotebook.id, type: NoteType.Text });
     // save the note
-    this.noteService.createNote(newn)
-      .then(note => {
+//    this.noteService.createNote(newn)
+    this.noteService.saveNote(newn)
+          .then(note => {
         this.notes.push(note);
         this.selectedNote = note;
         this.startEdition(note);
@@ -115,7 +101,8 @@ export class NotebookShowComponent implements OnInit {
   }
   renameNote(note: Note): void {
     this.noteService
-        .updateNote(note)
+//        .updateNote(note)
+        .saveNote(note)
         .then(() => {
           this.notes = this.notes.filter(h => h !== note);
           if (this.selectedNote === note) { this.selectedNote = null; }
