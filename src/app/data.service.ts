@@ -110,7 +110,7 @@ export class DataService {
           this.rootNotebook = new Notebook("/"); // initial root notebook 
           this.saveRootNotebook();
         } else {
-          let doc = result.rows[0];
+          let doc = result.rows[0].doc;
           doc.id = doc._id;
           this.rootNotebook = new Notebook(doc);
         }

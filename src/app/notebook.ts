@@ -2,6 +2,7 @@ import { INotebook } from './inotebook';
 
 export class Notebook implements INotebook {
 	private _id: string;
+	private _rev: string;
 	static idPrefix : string = "nb@";
 	parent: Notebook;
 	get id(): string { return this._id; }
@@ -16,12 +17,15 @@ export class Notebook implements INotebook {
 			// name is mandatory
 			this.name = ''+nb['name'];
 			// use the given id or create one
-			this._id = (nb['id']?nb['id']:this.getId());
+			this._id = (nb['id']?''+nb['id']:this.getId());
 			this.children = (nb['children'] ? nb['children'].map(function (c) { 
 				let newc = new Notebook(c);
 				newc.parent = this;
 				return newc; 
-			  }, this) : []); 
+			  }, this) : []);
+			if (nb['_rev']) this._rev = nb['_rev'];
+			if (nb['parent'])
+				this.parent = new Notebook(nb['parent']);
 		}
 	}
 	
