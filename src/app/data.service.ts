@@ -107,29 +107,31 @@ export class DataService {
         descending: true
       }).then((result) => {
         if (result.rows.length==0) {
-          this.rootNotebook = new Notebook("/"); // initial root notebook 
-          this.saveRootNotebook();
+          // initial root notebook
+          this.saveRootNotebook(new Notebook("/"));
         } else {
           let doc = result.rows[0].doc;
-          doc.id = doc._id;
-          this.rootNotebook = new Notebook(doc);
+          if (this.rootNotebook) this.rootNotebook.updateFrom(doc);
+          else this.rootNotebook = new Notebook(doc);
         }
         resolve(this.rootNotebook);
       }).catch((error) => this.handleError(error)); 
      });
   }
   
-  saveRootNotebook(): Promise<Notebook> {
-    let nb = this.rootNotebook;
+  saveRootNotebook(root: Notebook): Promise<Notebook> {
     let that = this;
-    var o = JSON.parse(nb.toJSON());
-    o._id = o.id; o.id = undefined;
+    this.rootNotebook = root;
+    var o = JSON.parse(root.toJSON());
     return new Promise(resolve=> {
       this.db.put(o, function (error, response) {
         if(error) that.handleError(error);
-        if(response && response.ok) resolve(nb);
+        if(response && response.ok) {
+          root.updateRev(response.rev);
+          resolve(root);
+        }
       });
-    });
+    }); // be sure to refresh rev number
   }
 
   getNotebook(notebookid: string): Promise<Notebook> {
@@ -180,7 +182,7 @@ export class DataService {
     let that = this;
     var o = {};
     o['_id'] = note.id;
-    if (note.rev) o['_rev'] = note.rev;
+    o['_rev'] = (note.rev? note.rev + 1: 0);
     o['title'] = note.title;
     o['content'] = note.content;
     o['notebookid'] = note.notebookid;

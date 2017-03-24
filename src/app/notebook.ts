@@ -13,22 +13,28 @@ export class Notebook implements INotebook {
 	children: Notebook[]; 
 	
 	constructor(nb: Object) {
-		if (nb) {
-			// name is mandatory
-			this.name = ''+nb['name'];
-			// use the given id or create one
-			this._id = (nb['id']?''+nb['id']:this.getId());
-			this.children = (nb['children'] ? nb['children'].map(function (c) { 
-				let newc = new Notebook(c);
-				newc.parent = this;
-				return newc; 
-			  }, this) : []);
-			if (nb['_rev']) this._rev = nb['_rev'];
-			if (nb['parent'])
-				this.parent = new Notebook(nb['parent']);
-		}
+		if (nb) this.updateFrom(nb);
 	}
-	
+
+	updateFrom (nb) {
+		// name is mandatory
+		this.name = ''+nb['name'];
+		// use the given id or create one
+		this._id = (nb['_id']?''+nb['_id']:this.getId());
+		this.children = (nb['children'] ? nb['children'].map(function (c) { 
+			let newc = new Notebook(c);
+			newc.parent = this;
+			return newc; 
+		}, this) : []);
+		if (nb['_rev']) this._rev = nb['_rev'];
+		if (nb['parent'])
+			this.parent = new Notebook(nb['parent']);		
+	}
+	// only for data.service
+	updateRev(rev: string) {
+		this._rev = rev;
+	}
+
 	private getId(): string {
 	    return Notebook.idPrefix + Date.now() + Math.ceil(Math.random()*1000);
 	}
@@ -53,7 +59,9 @@ export class Notebook implements INotebook {
 	
 	toJSON(): string {
 		let first=true;
-		let cts = `{"id": "${this.id}",  "name": "${this.name}",  "children": [`;
+		let cts = `{"_id": "${this._id}",  "name": "${this.name}",  `;
+		if (this._rev) cts += `"_rev": "${this._rev}", `;
+		cts += `"children": [`;
 		if (Array.isArray(this.children))
 			this.children.forEach(function(c) {
 				if (first) first = false;

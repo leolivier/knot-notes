@@ -51,13 +51,13 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
 //    private noteService: NoteService) {
     private noteService: DataService) {
   // creates a pseudo tree (or else the TreeComponent won't update)
-    this.setRoot(new Notebook({ name: '/' }));
+    this.initRoot(new Notebook({ name: '/' }));
   }
 
   // load the notebook tree at init
   ngOnInit() {
     this.noteService.getRootNotebook()
-      .then(notebook => this.setRoot(notebook))
+      .then(notebook => this.initRoot(notebook))
       .then(()=>this.notebookTree.treeModel.getFirstRoot().setActiveAndVisible());
   }
 
@@ -67,10 +67,14 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   }
 
   // set the data in the node tree (as an array because this is the way the TreeComponent wants it)
-  setRoot(root: Notebook): void {
+  initRoot(root: Notebook): void {
     this.expandAll(root);
     this.rootNotebook = [root];
     this.selectedNotebook = root;
+  }
+
+  saveRoot() {
+    this.noteService.saveRootNotebook(this.rootNotebook[0]).then(nb=>this.rootNotebook = [nb]);
   }
 
   selectNotebook($event) {
@@ -118,9 +122,7 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   endEdition(): void {
     this._editableNodeId = "";
     this._initialName = "";
-    // save the notebook tree
-//    this.noteService.updateRootNotebook(this.rootNotebook[0]);
-    this.noteService.saveRootNotebook();
+    this.saveRoot();
     // now update display and focus on new node
     this.notebookTree.treeModel.update();    
   }
@@ -136,9 +138,7 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     // add it to the children in the current node
     newnb.parent = nodedata;
     nodedata.children.push(newnb);
-    // save the notebook tree
-//    this.noteService.updateRootNotebook(this.rootNotebook[0]);
-    this.noteService.saveRootNotebook();
+    this.saveRoot();
     // now update display and focus on new node
     this.notebookTree.treeModel.update();
     this.startEdition(newnb.id);
@@ -151,9 +151,7 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     nodedata.parent.children = nodedata.parent.children.filter((c) => c.id != nodedata.id);
     // update the display
     this.notebookTree.treeModel.update();
-    // save the notebook tree
-//    this.noteService.updateRootNotebook(this.rootNotebook[0]);
-    this.noteService.saveRootNotebook();
+    this.saveRoot();
   }
 
   // find a tree node by its id (recursively) or null if the id is not found
