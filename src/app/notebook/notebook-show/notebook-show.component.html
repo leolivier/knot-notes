@@ -1,6 +1,6 @@
 <div class="notebook-title">
    <span>{{name()}}</span>
-   <button *ngIf="_currentNotebook" (click)="newNote()"><i class="fa fa-plus-square"></i></button>
+   <button *ngIf="currentNotebook" (click)="newNote()"><i class="fa fa-plus-square"></i></button>
 </div>
 <ul class="items">
 	<li *ngFor="let n of notes" (click)="selectNote(n)" [class.selected-item]="n==selectedNote">

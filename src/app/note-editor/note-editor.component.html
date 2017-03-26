@@ -1,7 +1,7 @@
 <div *ngIf="note" class="note-editor-container">
 	<header>{{note.title}}</header>
 	<div class="note-editor-wrapper">
-		<label *ngIf="!note.content">Click in text to edit, please...</label>
+		<label *ngIf="!note.content" class="note-editor-placeholder">Click in text, and start typing to edit, please...</label>
 		<div id={{editorId}} class="note-editor" rows="20">{{note.content}}</div>
 	</div>
 </div>

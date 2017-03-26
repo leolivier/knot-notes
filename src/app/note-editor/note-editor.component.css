@@ -12,12 +12,17 @@
 
 .note-editor-wrapper {
 	padding: 0 10px 0 10px;
+	position: relative;
+	top: -10px; /* why, oh why do I need this ?!?!?! */
 }
 
-.note-editor-wrapper label {
-	position: relative;
+.note-editor-placeholder {
+	position: absolute;
+	top: 0;
+	padding: 0 10px 0 10px;
+	color: '#aaaaaa';
 }
 
 .note-editor {
-	top: -30px; /* why, oh why do I need this ?!?!?! */
+	top: 0px; 
 }
