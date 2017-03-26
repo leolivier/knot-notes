@@ -82,19 +82,18 @@ export class DataService {
           changedIndex = index;
         }
       });
-      // A note was deleted
-      if (change.deleted) {
-        this.notes.splice(changedIndex, 1);
-      } else {
-        // A note was updated
-        if (changedNote) {
+      if (changedNote) {
+        if (change.deleted) { // A note was deleted
+          this.notes.splice(changedIndex, 1);
+        } else {
+          // A note was updated
           if (changedNote.rev !== change.doc._rev) { // do nothing if same rev, it's a local change
             this.notes[changedIndex] = new Note(change.doc);
           }
-        } else {
-        // A note was added
-          this.notes.push(new Note(change.doc));
         }
+      } else if (!change.deleted) { // else unknown note deleted 
+        // A note was added
+        this.notes.push(new Note(change.doc));
       }
     }
   }
@@ -119,10 +118,10 @@ export class DataService {
         } else {
           const doc = result.rows[0].doc;
           if (this.rootNotebook) {
-           this.rootNotebook.updateFrom(doc);
+            this.rootNotebook.updateFrom(doc);
           } else {
             this.rootNotebook = new Notebook(doc);
-        }
+          }
         }
         resolve(this.rootNotebook);
       }).catch((error) => this.handleError(error));
@@ -148,7 +147,7 @@ export class DataService {
   getNotebook(notebookid: string): Promise<Notebook> {
     const that = this;
     if (this.rootNotebook) {
-     return new Promise(resolve => resolve(that.rootNotebook.findById(notebookid)));
+      return new Promise(resolve => resolve(that.rootNotebook.findById(notebookid)));
     }
     return this.getRootNotebook().then(nb => nb.findById(notebookid));
   }
@@ -192,6 +191,7 @@ export class DataService {
   saveNote(note: Note): Promise<Note> {
     const that = this;
     const o = JSON.parse(JSON.stringify(note));
+    o['modified'] = new Date().getTime();
     return new Promise(resolve => {
       this.db.put(o, function(error, response) {
         if (error) { that.handleError(error); }
@@ -202,44 +202,28 @@ export class DataService {
         }
       });
     });
-/*
-    o['_id'] = note.id;
-    o['_rev'] = (note.rev ? note.rev + 1 : 0);
-    o['title'] = note.title;
-    o['content'] = note.content;
-    o['notebookid'] = note.notebookid;
-    o['type'] = note.type;
-    o['tags'] = note.tags;
-    o['modified'] = new Date().getTime();
-
-    return this.db.put(o, function(error, response) {
-      if (error) { return that.handleError(error); }
-      if (response && response.ok) {
-        return new Promise(resolve => resolve(note)); */
-        /*         if(noteform.attachment.files.length){
-                var reader = new FileReader();
-                // Using a closure so  we can extract the File's data in the function.
-                reader.onload = (function(file){
-                  return function(e) {
-                    var pos = e.target.result.search(',');
-                    var content= e.target.result.slice(pos+1);
-                    //var mimetype= e.target.result.slice(0, pos);
-                    //pos = mimetype.search(';');
-                    //mimetype = mimetype.slice(0, pos);
-                    //pos = mimetype.search(':');
-                    //mimetype = mimetype.slice(pos+1);
-                    pdb.putAttachment(response.id, file.name, response.rev, content, file.type).then(function (result) {
-                      showerror(["Attachment saved"]);
-                    }).catch(function (err) {
-                      console.log(err);
-                    });
-                  }
-                })(noteform.attachment.files.item(0));
-
-                reader.readAsDataURL(noteform.attachment.files.item(0));
-              } */
-/*      }
-    });*/
+    /*         if(noteform.attachment.files.length){
+            const reader = new FileReader();
+            // Using a closure so  we can extract the File's data in the function.
+            reader.onload = (function(file){
+              return function(e) {
+                var pos = e.target.result.search(',');
+                var content= e.target.result.slice(pos+1);
+                //var mimetype= e.target.result.slice(0, pos);
+                //pos = mimetype.search(';');
+                //mimetype = mimetype.slice(0, pos);
+                //pos = mimetype.search(':');
+                //mimetype = mimetype.slice(pos+1);
+                pdb.putAttachment(response.id, file.name, response.rev, content, file.type).then(function (result) {
+                  showerror(["Attachment saved"]);
+                }).catch(function (err) {
+                  console.log(err);
+                });
+              }
+            })(noteform.attachment.files.item(0));
+    
+            reader.readAsDataURL(noteform.attachment.files.item(0));
+          } */
   }
 
   deleteNote(id: string): Promise<void> {
