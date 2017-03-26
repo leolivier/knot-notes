@@ -59,7 +59,7 @@ export class NoteService {
       .catch(this.handleError);
   }
 
-  updateNote(note: Note): Promise<Note> {
+  saveNote(note: Note): Promise<Note> {
     const url = `${this.noteUrl}/${note.id}`;
     return this.http
       .put(url, JSON.stringify(note), {headers: this.headers})
@@ -68,13 +68,14 @@ export class NoteService {
       .catch(this.handleError);
   }
 
+  /* use saveNote instead
   createNote(note: Note): Promise<Note> {
     return this.http
       .post(this.noteUrl, JSON.stringify(note), {headers: this.headers})
       .toPromise()
       .then(res => res.json().data)
       .catch(this.handleError);
-  }
+  }*/
 
   deleteNote(id: number): Promise<void> {
     const url = `${this.noteUrl}/${id}`;

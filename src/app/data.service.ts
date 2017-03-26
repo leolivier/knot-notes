@@ -66,11 +66,11 @@ export class DataService {
   }
 
   handleChange(change) {
-    if (this.rootNotebook && this.rootNotebook === change.id) {
+    if (this.rootNotebook && this.rootNotebook.id === change.id) {
       if (change.deleted) {
         alert('root notebook deleted!!!');
-      } else {
-        this.rootNotebook = new Notebook(change.doc);
+      } else if (this.rootNotebook.rev !== change.doc._rev) { // do nothing if same rev
+        this.rootNotebook.updateFrom(change.doc);
       }
     } else {
       let changedNote = null;
@@ -88,7 +88,9 @@ export class DataService {
       } else {
         // A note was updated
         if (changedNote) {
-         this.notes[changedIndex] = new Note(change.doc);
+          if (changedNote.rev !== change.doc._rev) { // do nothing if same rev, it's a local change
+            this.notes[changedIndex] = new Note(change.doc);
+          }
         } else {
         // A note was added
           this.notes.push(new Note(change.doc));
@@ -135,11 +137,12 @@ export class DataService {
       this.db.put(o, function(error, response) {
         if (error) { that.handleError(error); }
         if (response && response.ok) {
-          root.updateRev(response.rev);
+          // be sure to refresh rev number
+          root.rev = response.rev;
           resolve(root);
         }
       });
-    }); // be sure to refresh rev number
+    });
   }
 
   getNotebook(notebookid: string): Promise<Notebook> {
@@ -152,8 +155,6 @@ export class DataService {
 
   getNotebookNotes(notebookid: string): Promise<Note[]> {
     const that = this;
-    //    if (this.rootNotebook) return new Promise(resolve=> resolve(that.notes.filter(n=>n.notebookid==notebookid)));
-    //    return new Promise(resolve=>that.initService().then(()=>that.notes.find(n=>n.notebookid==notebookid)));
     return new Promise(resolve => {
       that.db.query((doc, emit) => {
         if (doc.notebookid && doc.notebookid === notebookid) { emit(doc); }
@@ -171,7 +172,7 @@ export class DataService {
     });
   }
 
-  getNote(id: number): Promise<Note> {
+  getNote(id: string): Promise<Note> {
     const that = this;
     const n = this.notes.find(nt => nt.id === id);
     if (n) { return new Promise(resolve => resolve(n)); }
@@ -190,7 +191,18 @@ export class DataService {
 
   saveNote(note: Note): Promise<Note> {
     const that = this;
-    const o = {};
+    const o = JSON.parse(JSON.stringify(note));
+    return new Promise(resolve => {
+      this.db.put(o, function(error, response) {
+        if (error) { that.handleError(error); }
+        if (response && response.ok) {
+          // be sure to refresh rev number
+          note.rev = response.rev;
+          resolve(note);
+        }
+      });
+    });
+/*
     o['_id'] = note.id;
     o['_rev'] = (note.rev ? note.rev + 1 : 0);
     o['title'] = note.title;
@@ -203,7 +215,7 @@ export class DataService {
     return this.db.put(o, function(error, response) {
       if (error) { return that.handleError(error); }
       if (response && response.ok) {
-        return new Promise(resolve => resolve(note));
+        return new Promise(resolve => resolve(note)); */
         /*         if(noteform.attachment.files.length){
                 var reader = new FileReader();
                 // Using a closure so  we can extract the File's data in the function.
@@ -226,11 +238,11 @@ export class DataService {
 
                 reader.readAsDataURL(noteform.attachment.files.item(0));
               } */
-      }
-    });
+/*      }
+    });*/
   }
 
-  deleteNote(id: number): Promise<void> {
+  deleteNote(id: string): Promise<void> {
     const that = this;
     /* IDs must be a string */
     return this.db.get(+id, function(error, doc) {

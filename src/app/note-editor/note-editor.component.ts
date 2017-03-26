@@ -1,6 +1,7 @@
 import { Component, OnDestroy, AfterViewInit, EventEmitter, Input, Output } from '@angular/core';
 import { Note } from '../note';
-import { NoteService } from '../note.service';
+// import { NoteService } from '../note.service';
+import { DataService } from '../data.service';
 
 declare var tinymce: any;
 
@@ -13,22 +14,23 @@ declare var tinymce: any;
 export class NoteEditorComponent implements AfterViewInit, OnDestroy {
   private _note: Note;
   @Input () set note(note: Note) {
-    let reinit = (this._note && this._note!=note);
+    const reinit = (this._note && this._note !== note);
     this._note = note;
     // force reinit as Angular does not seem to detect change :/
-    if (reinit) this.ngAfterViewInit(); 
+    if (reinit) { this.ngAfterViewInit(); }
   }
-  get note() : Note { return this._note; }
+  get note(): Note { return this._note; }
 
   @Input() editorId: String;
 
   editor;
 
-  constructor(private noteService: NoteService) {}
+//  constructor(private noteService: NoteService) {}
+    constructor(private noteService: DataService) {}
 
   ngAfterViewInit() {
     // double check, should be useless if ok on ngDestroy
-    if (this.editor) tinymce.remove(this.editor);
+    if (this.editor) { tinymce.remove(this.editor); }
     // init the tinyMCE editor
     tinymce.init({
       selector: '#' + this.editorId,
@@ -38,14 +40,14 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
         'searchreplace visualblocks code fullscreen',
         'insertdatetime media table contextmenu paste'
       ],*/
-      toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+      toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | ' +
+                'bullist numlist outdent indent | link image',
       skin_url: 'assets/skins/lightgray',
       inline: true,
       setup: editor => {
         this.editor = editor;
         editor.on('keyup', () => {
-          const content = editor.getContent();
-          this.note.content = content;
+          this.note.content = editor.getContent();
           this.save();
         });
       },
@@ -58,7 +60,7 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   save(): void {
-    this.noteService.updateNote(this.note)
-      .catch(reason => alert ("save error:"+JSON.stringify(reason)));
+    this.noteService.saveNote(this.note)
+      .catch(reason => alert ('save error:' + JSON.stringify(reason)));
   }
 }

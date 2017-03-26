@@ -5,23 +5,23 @@ import { Location } from '@angular/common';
 import { TreeComponent, TreeNode } from 'angular2-tree-component';
 import { Notebook } from '../../notebook';
 import { Note } from '../../note';
-//import { NoteService } from '../../note.service';
+// import { NoteService } from '../../note.service';
 import { DataService } from '../../data.service';
 import { NotebookShowComponent } from '../notebook-show/notebook-show.component';
 
 import { TREE_ACTIONS, KEYS, IActionMapping } from 'angular2-tree-component';
 
-const actionMapping:IActionMapping = {
+const actionMapping: IActionMapping = {
   mouse: {
     dblClick: (tree, node, $event) => {
-      //if (node.hasChildren) TREE_ACTIONS.TOGGLE_EXPANDED(tree, node, $event);
+      // if (node.hasChildren) TREE_ACTIONS.TOGGLE_EXPANDED(tree, node, $event);
       this.startEdition(node.data.id);
     },
   },
   keys: {
     127: (tree, node, $event) => this.deleteNotebook($event, node.data),
   }
-}
+};
 
 @Component({
   moduleId: module.id,
@@ -31,15 +31,23 @@ const actionMapping:IActionMapping = {
 })
 export class NotebookTreeComponent implements OnInit, AfterViewInit {
 
-  private _editableNodeId: string = "";
-  private _initialName: string = "";
+  private _editableNodeId = '';
+  private _initialName = '';
+
+    customTemplateStringOptions = {
+    // displayField: 'subTitle',
+    actionMapping,
+    //    nodeHeight: 23,
+    allowDrag: true,
+    allowDrop: true
+  };
 
   @Output() onSelectedNotebook = new EventEmitter<Notebook>();
 
   // inject the TreeComponent
   @ViewChild(TreeComponent)
   private notebookTree: TreeComponent;
-  
+
   // the notebook tree
   rootNotebook: Notebook[];
   selectedNotebook: Notebook;
@@ -48,9 +56,9 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-//    private noteService: NoteService) {
+    //    private noteService: NoteService) {
     private noteService: DataService) {
-  // creates a pseudo tree (or else the TreeComponent won't update)
+    // creates a pseudo tree (or else the TreeComponent won't update)
     this.initRoot(new Notebook({ name: '/' }));
   }
 
@@ -58,12 +66,12 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.noteService.getRootNotebook()
       .then(notebook => this.initRoot(notebook))
-      .then(()=>this.notebookTree.treeModel.getFirstRoot().setActiveAndVisible());
+      .then(() => this.notebookTree.treeModel.getFirstRoot().setActiveAndVisible());
   }
 
   ngAfterViewInit() {
-//    setTimeout(() => this.notebookTree.treeModel.expandAll());
-//    this.notebookTree.treeModel.getFirstRoot().setActiveAndVisible();
+    //    setTimeout(() => this.notebookTree.treeModel.expandAll());
+    //    this.notebookTree.treeModel.getFirstRoot().setActiveAndVisible();
   }
 
   // set the data in the node tree (as an array because this is the way the TreeComponent wants it)
@@ -74,7 +82,7 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   }
 
   saveRoot() {
-    this.noteService.saveRootNotebook(this.rootNotebook[0]).then(nb=>this.rootNotebook = [nb]);
+    this.noteService.saveRootNotebook(this.rootNotebook[0]).then(nb => this.rootNotebook = [nb]);
   }
 
   selectNotebook($event) {
@@ -83,58 +91,60 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   }
 
   isEditable(id: string): boolean {
-    return (id == this._editableNodeId);
+    return (id === this._editableNodeId);
   }
 
   startEdition(id: string): void {
     this._editableNodeId = id;
-    let n = this.findNodeById(this.notebookTree.treeModel.getFirstRoot(), id);
+    const n = this.findNodeById(this.notebookTree.treeModel.getFirstRoot(), id);
     if (n) {
       this._initialName = n.data.name;
       n.setActiveAndVisible();
     }
   }
 
-// expandAll not taken into account so rewrite it
+  // expandAll not taken into account so rewrite it
   expandAll(nb: Notebook) {
-    let that = this;
+    const that = this;
     nb['isExpanded'] = true;
-    if (nb.children && Array.isArray(nb.children)) nb.children.forEach((c)=>that.expandAll(c));
+    if (nb.children && Array.isArray(nb.children)) { nb.children.forEach((c) => that.expandAll(c)); }
   }
 
   cancelEdition(id: string): void {
-    if (this._editableNodeId == id) {
-      let n = this.rootNotebook[0].findById(this._editableNodeId);
+    if (this._editableNodeId === id) {
+      const n = this.rootNotebook[0].findById(this._editableNodeId);
       n.name = this._initialName;
-      let nt = this.findNodeById(this.notebookTree.treeModel.getFirstRoot(), id);
+      const nt = this.findNodeById(this.notebookTree.treeModel.getFirstRoot(), id);
       nt.data.name = this._initialName;
-      this._editableNodeId = "";
-      this._initialName = "";
-      this.notebookTree.treeModel.update();    
+      this._editableNodeId = '';
+      this._initialName = '';
+      this.notebookTree.treeModel.update();
     }
   }
 
   toggleEdition(id: string): void {
-    if (this._editableNodeId == id) this.cancelEdition(id);
-    else this.startEdition(id);
+    if (this._editableNodeId === id) { this.cancelEdition(id); } else { this.startEdition(id); }
   }
 
   endEdition(): void {
-    this._editableNodeId = "";
-    this._initialName = "";
+    this._editableNodeId = '';
+    this._initialName = '';
     this.saveRoot();
     // now update display and focus on new node
-    this.notebookTree.treeModel.update();    
+    this.notebookTree.treeModel.update();
   }
 
   checkEndEdition($event): void {
-    if ($event.key === "Enter") this.endEdition();
+    switch ($event.key) {
+      case 'Enter': this.endEdition(); break;
+      case 'Escape': this.cancelEdition(this._editableNodeId); break;
+    }
   }
 
   addNotebook($event, nodedata: Notebook) {
     $event.stopPropagation();
     // create a default new node with a predefined name
-    const newnb = new Notebook({ name: "new notebook" });
+    const newnb = new Notebook({ name: 'new notebook' });
     // add it to the children in the current node
     newnb.parent = nodedata;
     nodedata.children.push(newnb);
@@ -148,7 +158,7 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     // TODO: Add a confirmation before actually deleting.
     // TODO: If confirmed, ask if notes and subtree must be deleted also
     // remove in the parent node the node having the current node id
-    nodedata.parent.children = nodedata.parent.children.filter((c) => c.id != nodedata.id);
+    nodedata.parent.children = nodedata.parent.children.filter((c) => c.id !== nodedata.id);
     // update the display
     this.notebookTree.treeModel.update();
     this.saveRoot();
@@ -156,21 +166,15 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
 
   // find a tree node by its id (recursively) or null if the id is not found
   findNodeById(from: TreeNode, id: string): TreeNode {
-    if (from.id == id) return from;
-    else if (from.children && from.children.length > 0) {
+    if (from.id === id) {
+      return from;
+    } else if (from.children && from.children.length > 0) {
       for (let c of from.children) {
-        let r = this.findNodeById(c, id);
-        if (r) return r;
+        const r = this.findNodeById(c, id);
+        if (r) { return r; }
       }
     }
     return null;
   }
 
-   customTemplateStringOptions = {
-    // displayField: 'subTitle',
-    actionMapping,
-//    nodeHeight: 23,
-    allowDrag: true,
-    allowDrop: true
-  }
 }
