@@ -6,8 +6,8 @@ import 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 
-import { Note } from './note';
-import { Notebook } from './notebook';
+import { Note } from '../note';
+import { Notebook } from '../notebook/notebook';
 
 const PouchDB = require('pouchdb');
 

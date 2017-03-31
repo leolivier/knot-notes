@@ -4,11 +4,11 @@ import 'rxjs/add/operator/switchMap';
 import { Observable } from 'rxjs/Observable';
 
 import { Note } from '../note';
-import { Notebook } from '../notebook';
+import { Notebook } from '../notebook/notebook';
 import { NoteEditorComponent } from '../note-editor/note-editor.component';
 import { NotebookShowComponent } from '../notebook/notebook-show/notebook-show.component';
 // import { NoteService } from '../note.service';
-import { DataService } from '../data.service';
+import { DataService } from '../services/data.service';
 
 @Component({
   moduleId: module.id,

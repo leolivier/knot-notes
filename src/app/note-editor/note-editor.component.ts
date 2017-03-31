@@ -1,7 +1,7 @@
 import { Component, OnDestroy, AfterViewInit, EventEmitter, Input, Output } from '@angular/core';
 import { Note } from '../note';
 // import { NoteService } from '../note.service';
-import { DataService } from '../data.service';
+import { DataService } from '../services/data.service';
 
 declare var tinymce: any;
 const ph_defaultStyle = { style: { position: 'absolute', top: '2px', left: 0, color: '#aaaaaa', padding: '.25%', margin: '5px',

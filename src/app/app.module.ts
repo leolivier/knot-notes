@@ -9,13 +9,13 @@ import { AppRoutingModule } from './app-routing.module';
 
 // Imports for loading & configuring the in-memory web api
 import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { InMemoryDataService } from './in-memory-data.service';
+import { InMemoryDataService } from './services/in-memory-data.service';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 
-import { DataService } from './data.service';
-import { NoteService } from './note.service';
+import { DataService } from './services/data.service';
+import { NoteService } from './services/note.service';
 import { NoteEditorComponent } from './note-editor/note-editor.component';
 import { NotebookShowComponent } from './notebook/notebook-show/notebook-show.component';
 import { AdminMenuComponent } from './admin/admin-menu/admin-menu.component';

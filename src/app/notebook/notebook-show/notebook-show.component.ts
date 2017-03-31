@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Note, NoteType } from '../../note';
-import { Notebook } from '../../notebook';
+import { Notebook } from '../../notebook/notebook';
 // import { NoteService } from '../../note.service';
-import { DataService } from '../../data.service';
+import { DataService } from '../../services/data.service';
 
 @Component({
   moduleId: module.id,

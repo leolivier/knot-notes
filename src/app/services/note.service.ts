@@ -3,8 +3,8 @@ import { Headers, Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 
-import { Note } from './note';
-import { Notebook } from './notebook';
+import { Note } from '../note';
+import { Notebook } from '../notebook/notebook';
 
 @Injectable()
 export class NoteService {

@@ -3,10 +3,10 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { TreeComponent, TreeNode } from 'angular2-tree-component';
-import { Notebook } from '../../notebook';
+import { Notebook } from '../../notebook/notebook';
 import { Note } from '../../note';
 // import { NoteService } from '../../note.service';
-import { DataService } from '../../data.service';
+import { DataService } from '../../services/data.service';
 import { NotebookShowComponent } from '../notebook-show/notebook-show.component';
 
 import { TREE_ACTIONS, KEYS, IActionMapping } from 'angular2-tree-component';
