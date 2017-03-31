@@ -8,6 +8,7 @@
 .note-editor-container header {
   background-color: #607D8B;
   color: #EEE;
+  padding-left: .5em;
 }
 
 .note-editor-wrapper {

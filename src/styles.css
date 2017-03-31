@@ -9,6 +9,12 @@ h2, h3 {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: lighter;
 }
+h3 {
+  text-align: center; margin-bottom: 0;
+}
+h4 {
+  position: relative;
+}
 body {
   margin: 2em;
 }
@@ -17,9 +23,24 @@ body, input[text], button {
   font-family: Cambria, Georgia;
 }
 a {
+  text-decoration: none;
   cursor: pointer;
   cursor: hand;
 }
+
+/*
+*, *:after, *:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}*/
+
+/* everywhere else */
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* buttons */
 button {
   font-family: Arial;
   background-color: #eee;
@@ -59,12 +80,14 @@ nav a.active {
   color: #039be5;
 }
 
+/* icons */
 .icon {
   width: 48px;
   height: 48px;
   vertical-align: bottom;
 }
-/* items class */
+
+/* items class used in lists */
 .items {
   margin: 0 0 2em 0;
   list-style-type: none;
@@ -77,7 +100,7 @@ nav a.active {
   left: 0;
   background-color: #EEE;
   margin: .5em;
-  padding: .3em 0;
+  padding: /*.3em 0;*/ 0;
   height: 1.6em;
   border-radius: 4px;
   display: flex;
@@ -97,7 +120,7 @@ nav a.active {
 }
 .items .text {
   position: relative;
-  top: -3px;
+/*  top: -3px;*/
   text-align: left;
 }
 .items .badge {
@@ -113,6 +136,7 @@ nav a.active {
   height: 1.8em;
   margin-right: .8em;
   border-radius: 4px 0 0 4px;
+  flex: none !important;
 }
 .items button {
   flex:none;
@@ -128,26 +152,84 @@ nav a.active {
   flex: auto;
   text-align: left;
 }
-.items .badge {
-  flex: none !important;
+.items .selected-item {
+  background-color: #90bbdf;
+}
+.items .selected-item button {
+  visibility: visible;
+}
+
+/* grids definition */
+[class*='col-'] {
+  float: left;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  flex:none;
+}
+[class*='col-']:last-of-type {
+  padding-right: 0;
+}
+
+.grid {
+  margin: 0;
+}
+.col-1-4 {
+  width: 25%;
+}
+.grid-pad {
+  padding: 10px 0;
+  display:flex;
+  flex-flow: row;
+}
+.grid-pad > [class*='col-']:last-of-type {
+  padding-right: 20px;
+  flex:auto;
+}
+@media (max-width: 600px) {
+  .module {
+    font-size: 10px;
+/*    max-height: 75px; */}
+}
+@media (max-width: 1024px) {
+  .grid {
+    margin: 0;
+  }
+  .module {
+    min-width: 240px;
+  }
+}
+
+/* modules */
+.module {
+  padding: 0.5em;
+  text-align: center;
+  color: #fff;
+ /* min-width: 480px;*/
+  background-color: #607D8B;
+  border-radius: 4px;
+}
+.module:hover {
+/*  background-color: #FFF;
+  color: #607d8b;*/
+  cursor: pointer;
 }
 /* overrides items color in module */
 .module .items li {
   color:#607D8B;
 }
-.selected-item {
-  background-color: #90bbdf;
-}
-.selected-item button {
-  visibility: visible;
-}
-/* everywhere else */
-* {
-  font-family: Arial, Helvetica, sans-serif;
+
+.full-height {
+  height:100%;
 }
 
 
 /* nodetree */
+/* should be in notebook/notebook-tree/notebook-tree.css
+   but does not work there */
+.tree-wrapper {
+  height: 10em;
+}
+
 .notebookTree, .tree  {
   width: 300px;
 }
@@ -186,6 +268,13 @@ nav a.active {
   position: absolute;
 }
 
+.node-content-wrapper:hover { 
+  background: #a0c7ff; 
+  color: #607d8b;
+  /*left: .1em;*/
+}
+
+
 .node-content-wrapper::before {
   border-bottom: 1px solid lightgrey;
   border-left: 1px solid lightgrey;
@@ -200,7 +289,7 @@ nav a.active {
 }
 
 .tree-node-focused > .node-wrapper > .node-content-wrapper {
-  background-color: #eeeedf !important;  
+  background-color: #bedeff !important;  
   color: #607d8b !important;
 }
 
