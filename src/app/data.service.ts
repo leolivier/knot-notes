@@ -91,7 +91,7 @@ export class DataService {
             this.notes[changedIndex] = new Note(change.doc);
           }
         }
-      } else if (!change.deleted) { // else unknown note deleted 
+      } else if (!change.deleted) { // else unknown note deleted
         // A note was added
         this.notes.push(new Note(change.doc));
       }
@@ -202,6 +202,7 @@ export class DataService {
         }
       });
     });
+    // TODO: manage attachments and images
     /*         if(noteform.attachment.files.length){
             const reader = new FileReader();
             // Using a closure so  we can extract the File's data in the function.
@@ -221,7 +222,6 @@ export class DataService {
                 });
               }
             })(noteform.attachment.files.item(0));
-    
             reader.readAsDataURL(noteform.attachment.files.item(0));
           } */
   }

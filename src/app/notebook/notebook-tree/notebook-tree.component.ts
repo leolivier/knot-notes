@@ -169,10 +169,11 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     if (from.id === id) {
       return from;
     } else if (from.children && from.children.length > 0) {
-      for (let c of from.children) {
-        const r = this.findNodeById(c, id);
-        if (r) { return r; }
-      }
+      return from.children.find(c => this.findNodeById(c, id) != null);
+//      for (let c of from.children) {
+//        const r = this.findNodeById(c, id);
+//        if (r) { return r; }
+//      }
     }
     return null;
   }

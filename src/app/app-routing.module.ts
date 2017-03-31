@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-//import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+// import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { NoteEditorComponent } from './note-editor/note-editor.component';
@@ -18,10 +18,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [ 
-  	RouterModule.forRoot(routes)
-//  	NgbModule.forRoot()
+  imports: [
+    RouterModule.forRoot(routes)
+    //  	NgbModule.forRoot()
   ],
-  exports: [ RouterModule ]
+  exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

@@ -24,7 +24,7 @@ export class Notebook implements INotebook {
     this.name = '' + nb['name'];
     // use the given id or create one
     this._id = (nb['_id'] ? '' + nb['_id'] : this.getId());
-    this.children = (nb['children'] ? nb['children'].map(function(c) {
+    this.children = (nb['children'] ? nb['children'].map(c => {
       const newc = new Notebook(c);
       newc.parent = this;
       return newc;
@@ -43,10 +43,11 @@ export class Notebook implements INotebook {
     if (this.id === id) {
       return this;
     } else if (this.children && this.children.length > 0) {
-      for (let c of this.children) {
-        const r = c.findById(id);
-        if (r) { return r; }
-      }
+      return this.children.find(c => c.findById(id) != null);
+//      for (let c of this.children) {
+//        const r = c.findById(id);
+//        if (r) { return r; }
+//      }
     }
     return null;
   }

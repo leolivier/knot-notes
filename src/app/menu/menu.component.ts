@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 export class DropdownValue {
-  value:string;
-  label:string;
+  value: string;
+  label: string;
 
-  constructor(value:string,label:string) {
+  constructor(value: string, label: string) {
     this.value = value;
     this.label = label;
   }
@@ -13,7 +13,7 @@ export class DropdownValue {
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: [ './menu.component.css' ]
+  styleUrls: ['./menu.component.css']
 })
 export class MenuComponent {
   opened: boolean;

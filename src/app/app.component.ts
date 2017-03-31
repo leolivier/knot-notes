@@ -10,14 +10,14 @@ import { Router } from '@angular/router';
 export class AppComponent {
   title = 'Knot Notes';
   menuValues = [
-  	{ value:"notes", label: "All Notes" },
-  	{ value:"settings", label:"Settings"}
+    { value: 'notes', label: 'All Notes' },
+    { value: 'settings', label: 'Settings' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
-  action(act:string) {
-	this.router.navigate([act]);
+  action(act: string) {
+    this.router.navigate([act]);
   }
 }
 

@@ -32,17 +32,17 @@ import { PageNotFoundComponent } from './not-found.component';
     AppRoutingModule,
     TreeModule
   ],
- declarations: [
+  declarations: [
     AppComponent,
     DashboardComponent,
     NoteEditorComponent,
     NotebookShowComponent,
     AdminMenuComponent,
     NotebookTreeComponent,
-    MenuComponent, 
+    MenuComponent,
     PageNotFoundComponent
   ],
-  providers: [ NoteService, DataService ],
-  bootstrap: [ AppComponent ]
+  providers: [NoteService, DataService],
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
