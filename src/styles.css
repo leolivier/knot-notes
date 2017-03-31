@@ -159,6 +159,16 @@ nav a.active {
   visibility: visible;
 }
 
+.items-drop-zone {
+  height: 2px;	
+  visibility: hidden;
+}
+.items-drop-zone:hover {
+  height: 2px;
+  visibility:visible;
+}
+
+
 /* grids definition */
 [class*='col-'] {
   float: left;

@@ -5,6 +5,7 @@ export class Note {
   type: NoteType; /* see enum above */
   tags: string[] = []; /* a list of tags for the note */
   notebookid: string; /* id of the containing notebook or null */
+  order: number; /* order number of the note in its notebook */
   modified: Date; /* date last modified */
   get id(): string { return this._id; }
   set id(id: string) { this.id = id; }
@@ -26,5 +27,6 @@ export class Note {
     this.tags = (n['tags'] ? (Array.isArray(n['tags']) ? n['tags'] : [n['tags']]) : []);
     this.notebookid = (n['notebookid'] ? n['notebookid'] : undefined);
     if (n['_rev']) { this._rev = n['_rev']; }
+    this.order = (n['order'] ? n['order'] : 0);
   }
 }

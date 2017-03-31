@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Note, NoteType } from '../../note';
 import { Notebook } from '../../notebook/notebook';
-// import { NoteService } from '../../note.service';
 import { DataService } from '../../services/data.service';
 
 @Component({
@@ -21,7 +20,7 @@ export class NotebookShowComponent {
     this._currentNotebook = notebook;
     if (!notebook) { return; }
     this.noteService.getNotebookNotes(notebook.id)
-      .then(notes => this.notes = notes)
+      .then(notes => this.notes = notes.sort((n1, n2) => n1.order - n2.order))
       .catch(reason => alert('error in show notebook: ' + reason));
   }
   get currentNotebook(): Notebook { return this._currentNotebook; }
@@ -31,13 +30,13 @@ export class NotebookShowComponent {
   notes: Note[];
   selectedNote: Note;
 
-//  constructor(private noteService: NoteService) { }
   constructor(private noteService: DataService) {}
 
   name(): string {
     return (this.currentNotebook ? this.currentNotebook.fullName() : 'no selection');
   }
 
+  // TODO: enable drag&drop to change order
   selectNote(note: Note): void {
     this.selectedNote = note;
     this.onSelectedNote.emit(note);
@@ -68,7 +67,6 @@ export class NotebookShowComponent {
     this._editableNote = null;
     this._previousTitle = '';
     // save the notebook tree
-//    this.noteService.updateNote(n);
     this.noteService.saveNote(n);
   }
 
@@ -110,6 +108,39 @@ export class NotebookShowComponent {
   findById(id: string): Note {
     const ns = this.notes.filter(n => n.id = id);
     return (ns.length && ns.length > 0) ? ns[0] : null;
+  }
+
+  allowDropNote($event) {
+    $event.preventDefault();
+  }
+
+  dragNote($event, note: Note) {
+    $event.dataTransfer.setData('text', note.id);
+  }
+
+  dropNote($event, beforeNote: Note) {
+    $event.preventDefault();
+    // the id of the note being dragged as stored in dragNote
+    const draggedId = $event.dataTransfer.getData('text');
+    // do nothing if not changed
+    if (draggedId === beforeNote.id) { return; }
+//    $event.target.appendChild(document.getElementById(data));
+    // find the index of dragged note in notes
+    let i = this.notes.findIndex(nt => nt.id === draggedId);
+    // remember the dragged note
+    const n = this.notes[i];
+    // remove the dragged note from the list
+    this.notes.splice(i, 1);
+    // find where to re inseert it
+    i = this.notes.findIndex(nt => nt.id === beforeNote.id);
+    // and insert it
+    this.notes.splice(i, 0, n);
+    // re enumerate orders in notes
+    this.notes.forEach((nt, idx) => {
+      nt.order = idx;
+      this.noteService.saveNote(nt);
+    });
+    // force redisplay
   }
 }
 

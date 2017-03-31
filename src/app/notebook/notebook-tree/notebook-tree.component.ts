@@ -5,7 +5,6 @@ import { Location } from '@angular/common';
 import { TreeComponent, TreeNode } from 'angular2-tree-component';
 import { Notebook } from '../../notebook/notebook';
 import { Note } from '../../note';
-// import { NoteService } from '../../note.service';
 import { DataService } from '../../services/data.service';
 import { NotebookShowComponent } from '../notebook-show/notebook-show.component';
 
@@ -56,7 +55,6 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    //    private noteService: NoteService) {
     private noteService: DataService) {
     // creates a pseudo tree (or else the TreeComponent won't update)
     this.initRoot(new Notebook({ name: '/' }));
@@ -96,7 +94,8 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
 
   startEdition(id: string): void {
     this._editableNodeId = id;
-    const n = this.findNodeById(this.notebookTree.treeModel.getFirstRoot(), id);
+    //const n = this.findNodeById(this.notebookTree.treeModel.getFirstRoot(), id);
+    const n = this.notebookTree.treeModel.getNodeById(id);
     if (n) {
       this._initialName = n.data.name;
       n.setActiveAndVisible();
@@ -114,7 +113,8 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     if (this._editableNodeId === id) {
       const n = this.rootNotebook[0].findById(this._editableNodeId);
       n.name = this._initialName;
-      const nt = this.findNodeById(this.notebookTree.treeModel.getFirstRoot(), id);
+//      const nt = this.findNodeById(this.notebookTree.treeModel.getFirstRoot(), id);
+      const nt = this.notebookTree.treeModel.getNodeById(id);
       nt.data.name = this._initialName;
       this._editableNodeId = '';
       this._initialName = '';
@@ -165,6 +165,7 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   }
 
   // find a tree node by its id (recursively) or null if the id is not found
+/* useless, replaced by this.notebookTree.treeModel.getNodeById(id);
   findNodeById(from: TreeNode, id: string): TreeNode {
     if (from.id === id) {
       return from;
@@ -177,5 +178,5 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     }
     return null;
   }
-
+*/
 }
