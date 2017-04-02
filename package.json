@@ -27,6 +27,7 @@
     "core-js": "^2.4.1",
     "font-awesome": "^4.7.0",
     "pouchdb": "^6.1.2",
+    "pouchdb-find": "^0.10.5",
     "rxjs": "^5.0.1",
     "tinymce": "^4.5.4",
     "ts-helpers": "^1.1.1",

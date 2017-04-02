@@ -20,7 +20,7 @@ export class NotebookShowComponent {
     this._currentNotebook = notebook;
     if (!notebook) { return; }
     this.noteService.getNotebookNotes(notebook.id)
-      .then(notes => this.notes = notes.sort((n1, n2) => n1.order - n2.order))
+      .then(notes => this.notes = notes)
       .catch(reason => alert('error in show notebook: ' + reason));
   }
   get currentNotebook(): Notebook { return this._currentNotebook; }
@@ -36,7 +36,6 @@ export class NotebookShowComponent {
     return (this.currentNotebook ? this.currentNotebook.fullName() : 'no selection');
   }
 
-  // TODO: enable drag&drop to change order
   selectNote(note: Note): void {
     this.selectedNote = note;
     this.onSelectedNote.emit(note);
@@ -79,7 +78,7 @@ export class NotebookShowComponent {
 
   newNote(): void {
     // create a default new note with a predefined name in the current notebook
-    const newn: Note = new Note({ notebookid: this.currentNotebook.id, type: NoteType.Text });
+    const newn: Note = new Note({ notebookid: this.currentNotebook.id, type: NoteType.Text, order: this.notes.length });
     // save the note
     this.noteService.saveNote(newn)
           .then(note => {

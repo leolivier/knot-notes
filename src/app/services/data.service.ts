@@ -2,70 +2,105 @@ import { Injectable, NgZone } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 
-import 'rxjs/Rx';
+// import 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 
 import { Note } from '../note';
 import { Notebook } from '../notebook/notebook';
+import { Settings, knot_notes_dbname, RemoteDBSettings } from '../admin/settings';
 
 const PouchDB = require('pouchdb');
 
 @Injectable()
 export class DataService {
 
+  private settings: Settings;
   private db: any;
-  private username: string;
-  private password: string;
   private remote: string;
-  //  private data: any = [];
-  //  private results: any;
-  //  private api: any;
 
   rootNotebook: Notebook;
   notes: Note[];
 
-  constructor(private _http: Http, private zone: NgZone) {
+  constructor(private _http: Http) {
 
-    // database name
-    this.db = new PouchDB('knot-note');
+    // create/open local database
+    this.db = new PouchDB(knot_notes_dbname);
+    PouchDB.plugin(require('pouchdb-find'));
 
     window['PouchDB'] = PouchDB; // for debugging purpose
 
-    // couchdb login details
-    this.username = '<your_user_name_here>';
-    this.password = '<your_password_here>';
+    this.loadSettings()
+      .then(() => this.trySyncToRemote())
+      .catch((err) => this.handleError(err));
 
-    // cloudant, couchdb, couchbase remote url
-    // eg - https://<your_host>.cloudant.com/todo
-    this.remote = 'http://rasbpberrypi:5984/knot-note';
-
-    // cloudant, couchdb, couchbase remote url
-    // applicable when username/password set.
-    const options = {
-      live: true,
-      retry: true,
-      continuous: true,
-      auth: {
-        username: this.username,
-        password: this.password
-      }
-    };
-
-    //    this.db.sync(this.remote, options);
     this.db.setMaxListeners(30);
     // set up changes callback
     this.db.changes({ live: true, since: 'now', include_docs: true })
       .on('change', (change) => { this.handleChange(change); });
   }
 
-  initCall() {
-    // make sure UI is initialised
-    // correctly after sync.
-    this.zone.run(() => { });
+  trySyncToRemote() {
+    if (this.settings && this.settings.useRemoteDB) {
+      // check remote settings
+      const rs = this.settings.remoteDBSettings;
+      if (!rs || !rs.baseUrl || !rs.username || !rs.password) { return; }
+      this.remote = rs.baseUrl + '/' + knot_notes_dbname;
+      // remote db options
+      const options = {
+        live: true,
+        retry: true,
+        continuous: true,
+        auth: {
+          username:  this.settings.remoteDBSettings.username,
+          password: this.settings.remoteDBSettings.password
+        }
+      };
+
+      this.db.sync(this.remote, options).on('error', err => this.handleError(err));
+    }
+  }
+
+  loadSettings(force = false): Promise<Settings> {
+    if (this.settings && !force) {
+      return new Promise (resolve => resolve(this.settings));
+    }
+    const that = this;
+    return new Promise(resolve => {
+      that.db.get('settings').then(doc => {
+        that.settings = doc as Settings;
+        if (!that.settings.remoteDBSettings) { that.settings.remoteDBSettings = new RemoteDBSettings(); }
+        resolve(that.settings);
+      }).catch (err => {
+        that.settings = new Settings(); // default empty settings
+        that.handleError(err);
+      });
+    });
+  }
+
+  saveSettings(settings?: Settings): Promise<Settings> {
+    const that = this;
+    if (settings) { that.settings = settings; }
+    const o = JSON.parse(JSON.stringify(that.settings));
+    return new Promise(resolve => {
+      that.db.put(o, function(error, response) {
+        if (error) { that.handleError(error); }
+        if (response && response.ok) {
+          // be sure to refresh rev number
+          that.settings.rev = response.rev;
+          resolve(that.settings);
+          that.trySyncToRemote();
+        }
+      });
+    });
   }
 
   handleChange(change) {
+    if (change.id === 'settings') {
+      this.settings = (change.deleted ? /* reset settings */ new Settings() : change.doc as Settings);
+      return;
+    }
+
     if (this.rootNotebook && this.rootNotebook.id === change.id) {
       if (change.deleted) {
         alert('root notebook deleted!!!');
@@ -76,12 +111,14 @@ export class DataService {
       let changedNote = null;
       let changedIndex = null;
 
-      this.notes.forEach((note, index) => {
-        if (note.id === change.id) {
-          changedNote = note;
-          changedIndex = index;
-        }
-      });
+     if (this.notes && Array.isArray(this.notes)) {
+       this.notes.forEach((note, index) => {
+         if (note.id === change.id) {
+           changedNote = note;
+           changedIndex = index;
+         }
+        });
+      }
       if (changedNote) {
         if (change.deleted) { // A note was deleted
           this.notes.splice(changedIndex, 1);
@@ -93,38 +130,39 @@ export class DataService {
         }
       } else if (!change.deleted) { // else unknown note deleted
         // A note was added
-        this.notes.push(new Note(change.doc));
+        if (!this.notes) {
+          this.notes[0] = new Note(change.doc);
+        } else {
+          this.notes.push(new Note(change.doc));
+        }
       }
     }
   }
 
   private handleError(error: any): Promise<any> {
-    console.error('An error occurred', error); // for demo purposes only
+    // TODO: manage error correctly
+    console.error('An error occurred', error);
     return Promise.reject(error.message || error);
   }
 
   getRootNotebook(): Promise<Notebook> {
+    const that = this;
     return new Promise(resolve => {
-      this.db.allDocs({
-        include_docs: true,
-        limit: 30,
-        // startkey: Notebook.idPrefix,
-        // endkey: Notebook.idPrefix+'\uffff',
-        descending: true
-      }).then((result) => {
-        if (result.rows.length === 0) {
-          // initial root notebook
-          this.saveRootNotebook(new Notebook('/'));
+      that.db.get(Notebook.rootId).then(doc => {
+        if (that.rootNotebook) {
+          that.rootNotebook.updateFrom(doc);
         } else {
-          const doc = result.rows[0].doc;
-          if (this.rootNotebook) {
-            this.rootNotebook.updateFrom(doc);
-          } else {
-            this.rootNotebook = new Notebook(doc);
-          }
+          that.rootNotebook = new Notebook(doc);
         }
-        resolve(this.rootNotebook);
-      }).catch((error) => this.handleError(error));
+        resolve(that.rootNotebook);
+      }).catch((error) => {
+        if (error.name === 'not_found') {
+          // initial root notebook
+          that.saveRootNotebook(new Notebook({_id: Notebook.rootId, name: '/'}));
+        } else {
+          that.handleError(error);
+        }
+      });
     });
   }
 
@@ -155,6 +193,7 @@ export class DataService {
   getNotebookNotes(notebookid: string): Promise<Note[]> {
     const that = this;
     return new Promise(resolve => {
+      /*
       that.db.query((doc, emit) => {
         if (doc.notebookid && doc.notebookid === notebookid) { emit(doc); }
       },
@@ -163,17 +202,37 @@ export class DataService {
           limit: 60,
           descending: true,
         }).then((result) => {
-          this.notes = [];
-          const docs = result.rows.map((row) => { this.notes.push(new Note(row.doc)); });
-          this.notes.reverse();
-          resolve(this.notes);
+          that.notes = [];
+          const docs = result.rows.map((row) => { that.notes.push(new Note(row.doc)); });
+          that.notes.reverse();
+          resolve(that.notes);
         }).catch((error) => that.handleError(error));
+    */
+      that.db.createIndex({
+        // index: {fields: ['order', 'notebookid']}
+        index: {fields: ['notebookid']}
+      }).then(function () {
+        that.db.find ({
+          selector: {
+            $and: [
+              {notebookid: {$exists: true}},
+              {notebookid: {$eq: notebookid}}
+             ]},
+//          sort: [{'order': 'desc'}]
+        }).then (result => {
+          that.notes = [];
+          result.docs.map((doc) => { that.notes.push(new Note(doc)); });
+          that.notes.sort((n1, n2) => n1.order - n2.order);
+          // that.notes.reverse();
+          resolve(that.notes);
+        }).catch((error) => that.handleError(error));
+      });
     });
   }
 
   getNote(id: string): Promise<Note> {
     const that = this;
-    const n = this.notes.find(nt => nt.id === id);
+    const n = that.notes.find(nt => nt.id === id);
     if (n) { return new Promise(resolve => resolve(n)); }
     return new Promise(resolve => {
       that.db.get(id).then(doc => {
@@ -193,7 +252,7 @@ export class DataService {
     const o = JSON.parse(JSON.stringify(note));
     o['modified'] = new Date().getTime();
     return new Promise(resolve => {
-      this.db.put(o, function(error, response) {
+      that.db.put(o, function(error, response) {
         if (error) { that.handleError(error); }
         if (response && response.ok) {
           // be sure to refresh rev number
@@ -229,73 +288,31 @@ export class DataService {
   deleteNote(id: string): Promise<void> {
     const that = this;
     /* IDs must be a string */
-    return this.db.get(+id, function(error, doc) {
+    return that.db.get(+id, function(error, doc) {
       that.db.remove(doc, function(err, resp) {
         return (err ? that.handleError(err) : new Promise(resolve => resolve()));
       });
     });
   }
+}
 
-  // NOTE: Another way to retrieve data via a REST call
-  /* getUrl() {
-      let headers = new Headers();
-      headers.append("Authorization", "Basic " + btoa(this.username + ":" + this.password));
-      headers.append("Content-Type", "application/x-www-form-urlencoded");
-
-      this.api = this.remote + '/_all_docs?include_docs=true';
-
-      return new Promise(resolve => {
-        this._http.get(this.api, {headers: headers})
-                .map(res => res.json())
-              .subscribe(data => {
-                this.results = data;
-
-                this.data = [];
-
-                let docs = this.results.rows.map((row) => {
-                  this.data.push(row.doc);
-                });
-
-                resolve(this.data);
-
-                this.db.changes({live: true, since: 'now', include_docs: true}).on('change', (change) => {
-                    this.handleChange(change);
-                });
-
-              });
-      });
-
-  }
-
-  getDocuments() {
-    return new Promise(resolve => {
-      this.db.allDocs({
+/*
+      that.db.allDocs({
         include_docs: true,
         limit: 30,
+        // startkey: Notebook.idPrefix,
+        // endkey: Notebook.idPrefix+'\uffff',
         descending: true
       }).then((result) => {
-        this.data = [];
-        let docs = result.rows.map((row) => { this.data.push(row.doc); });
-        this.data.reverse();
-        resolve(this.data);
-        this.db.changes({live: true, since: 'now', include_docs:
-          true}).on('change', (change) => {
-              this.handleChange(change);
-        });
-      }).catch((error) => { console.log(error); });
-     });
-  }
-
-  private initService (): Promise<any> {
-    let that = this;
-    return this.getDocuments().then (function () {
-      that.rootNotebook = that.data.find(d=>d['id'].startsWith(Notebook.idPrefix)) as Notebook;
-      if (!that.rootNotebook) that.rootNotebook = new Notebook("/"); // initial root notebook
-      that.notes = that.data.filter(d=>!d['id'].startsWith(Notebook.idPrefix)) as Note[];
-      return new Promise(resolve=>resolve(that));
-    })
-    .catch(reason=>alert("Get Root Notebook Error: " + reason.toString()));
-  }
-
-*/
-}
+        if (result.rows.length === 0) {
+          // initial root notebook
+          that.saveRootNotebook(new Notebook('/'));
+        } else {
+          const doc = result.rows[0].doc;
+          if (that.rootNotebook) {
+            that.rootNotebook.updateFrom(doc);
+          } else {
+            that.rootNotebook = new Notebook(doc);
+          }
+        }
+ */
