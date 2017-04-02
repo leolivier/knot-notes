@@ -60,15 +60,20 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
     // init the tinyMCE editor
     tinymce.init({
       selector: '#note_editor',
-      plugins: ['link', 'paste', 'table'],
-/*      plugins: [
-        'advlist autolink lists link image charmap print preview anchor',
-        'searchreplace visualblocks code fullscreen',
-        'insertdatetime media table contextmenu paste'
-      ],*/
-      toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | ' +
-                'bullist numlist outdent indent | link image',
+      plugins: [
+        'link', 'paste', 'table', 'lists', 'advlist', 'autolink', 
+        'image', 'charmap', 'print', 'preview', 'anchor',
+        'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'contextmenu'
+        //'textcolor', 'colorpicker'
+      ],
+      toolbar1: 'undo redo | cut copy paste pasteastext insert selectall | styleselect | bold italic clearformat| ' +
+                'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+      toolbar2: 'searchreplace anchor | link image media table charmap | print preview fullscreen | ' +
+                'code visualblocks',
       skin_url: 'assets/skins/lightgray',
+      contextmenu: 'link image inserttable | cell row column deletetable',
+      menubar: false,
       inline: true,
       setup: editor => this.setupNoteEditor(editor),
 //      init_instance_callback: editor => this.initEditor(editor),
@@ -100,6 +105,7 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
       this.note.content = editor.getContent();
       this.save();
     });
+    editor.on('blur', () => editor.fire('keyup'));
   }
 
   initEditor(editor) {
