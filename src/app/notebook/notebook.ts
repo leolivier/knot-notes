@@ -1,7 +1,7 @@
 import { INotebook } from './inotebook';
 
 export class Notebook implements INotebook {
-  static idPrefix = 'nb@';
+  static rootId = 'rootNotebook';
   parent: Notebook;
   name: string;
   children: Notebook[];
@@ -36,7 +36,7 @@ export class Notebook implements INotebook {
   }
 
   private getId(): string {
-    return Notebook.idPrefix + Date.now() + Math.ceil(Math.random() * 1000);
+    return '' + Date.now() + Math.ceil(Math.random() * 1000);
   }
 
   findById(id: string): Notebook {
