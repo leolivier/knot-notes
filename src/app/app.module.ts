@@ -18,10 +18,10 @@ import { DataService } from './services/data.service';
 import { NoteService } from './services/note.service';
 import { NoteEditorComponent } from './note-editor/note-editor.component';
 import { NotebookShowComponent } from './notebook/notebook-show/notebook-show.component';
-import { AdminMenuComponent } from './admin/admin-menu/admin-menu.component';
 import { NotebookTreeComponent } from './notebook/notebook-tree/notebook-tree.component';
 import { MenuComponent } from './menu/menu.component';
 import { PageNotFoundComponent } from './not-found.component';
+import { SettingsComponent } from './admin/settings/settings.component';
 
 @NgModule({
   imports: [
@@ -37,10 +37,10 @@ import { PageNotFoundComponent } from './not-found.component';
     DashboardComponent,
     NoteEditorComponent,
     NotebookShowComponent,
-    AdminMenuComponent,
     NotebookTreeComponent,
     MenuComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    SettingsComponent
   ],
   providers: [NoteService, DataService],
   bootstrap: [AppComponent]
