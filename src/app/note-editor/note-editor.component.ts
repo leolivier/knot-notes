@@ -40,19 +40,26 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
   }
   get note(): Note { return this._note; }
 
-  @Input() editorId: String;
-
-  editor;
+  noteEditor;
+  titleEditor;
 
 //  constructor(private noteService: NoteService) {}
     constructor(private noteService: DataService) {}
 
   ngAfterViewInit() {
-    // double check, should be useless if ok on ngDestroy
-    // if (this.editor) { tinymce.remove(this.editor); }
+    // init the tinyMCE editor for the title
+    tinymce.init({
+      selector: '#title_editor',
+      inline: true,
+      toolbar: 'undo redo',
+      menubar: false,
+      setup: editor => this.setupTitleEditor(editor),
+    });
+    this.titleEditor.setContent(this.note.title);
+
     // init the tinyMCE editor
     tinymce.init({
-      selector: '#' + this.editorId,
+      selector: '#note_editor',
       plugins: ['link', 'paste', 'table'],
 /*      plugins: [
         'advlist autolink lists link image charmap print preview anchor',
@@ -63,19 +70,32 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
                 'bullist numlist outdent indent | link image',
       skin_url: 'assets/skins/lightgray',
       inline: true,
-      setup: editor => this.setupEditor(editor),
+      setup: editor => this.setupNoteEditor(editor),
 //      init_instance_callback: editor => this.initEditor(editor),
     });
-    this.editor.setContent(this.note.content);
+    this.noteEditor.setContent(this.note.content);
   }
 
   ngOnDestroy() {
-    tinymce.remove(this.editor);
-    this.editor.setContent('');
+    tinymce.remove(this.noteEditor);
+    this.noteEditor.setContent('');
   }
 
-  setupEditor(editor) {
-    this.editor = editor;
+  setupTitleEditor(editor) {
+    this.titleEditor = editor;
+    editor.on('blur', () => {
+      this.note.title = editor.getContent();
+      this.save();
+    });
+    editor.on('keyup', (e) => {
+      if (e.key === 'Enter') {
+        editor.fire('blur');
+      }
+    });
+  }
+  
+  setupNoteEditor(editor) {
+    this.noteEditor = editor;
     editor.on('keyup', () => {
       this.note.content = editor.getContent();
       this.save();

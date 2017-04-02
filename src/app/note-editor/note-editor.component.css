@@ -27,3 +27,7 @@
 .note-editor {
 	top: 0px; 
 }
+
+.title-editor p {
+	margin: 0;
+}
