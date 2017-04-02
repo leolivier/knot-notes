@@ -1,0 +1,20 @@
+<div class="settings">
+	<fieldset [disabled]="!settings.crypt">
+		<legend>Encrypt data <input type="checkbox" [(ngModel)]="settings.crypt"></legend>
+		<label>Encryption key: </label><br/>
+		<input type="password" placeholder="type a key..." [(ngModel)]="settings.cryptoKey">
+	</fieldset>
+	<fieldset [disabled]="!useRemoteDB">
+		<legend>Remote CouchDB server 
+			<input type="checkbox" [(ngModel)]="useRemoteDB">
+		</legend>
+		<label>Database server base url: </label><br/>
+		<input type="text" placeholder="https://<my-host>.<my-domain>" title="cloudant, couchdb, couchbase remote url\nDon't put the database name in the url" [(ngModel)]="settings.remoteDBSettings.baseUrl"><br/>
+		<label>Database user id: </label><br/>
+		<input type="text" placeholder="john-doe" [(ngModel)]="settings.remoteDBSettings.username" title="the user id to connect to the database"><br/>
+		<label>Database password: </label><br/>
+		<input type="password" placeholder="xXxoOo" [(ngModel)]="settings.remoteDBSettings.password" title="the user password to connect to the database">
+	</fieldset>
+	<button (click)="save()">Save settings</button>
+	<!-- button (click)="see()">See...</button-->
+</div>
