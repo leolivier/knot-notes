@@ -1,8 +1,20 @@
-# knot-note
-Yet another note editor (more or less evernot like)...
+
+# KNOT NOTES ![](https://github.com/leolivier/knot-note/raw/master/src/assets/images/knot-note.png)
+
+Yet another note editor (more or less evernote like)...
 This one is written with angular.
 
-__Currently, it is not yet usable!__
+__WARNING: This is an alpha release!__
+---
+Don't hesitate to create features requests.
+
+This version is able to store the notes locally in the browser's own database and is also able to store the notes in a CouchDB database on your own server.
+
+See [CouchDB site](http://docs.couchdb.org/en/latest/) for learning how to install and run CouchDB (I did it on a raspberrypi 2 and it works like a charm). 
+
+*This should also work with all databases compatible with [PouchDB](https://pouchdb.com) (CouchBase, Cloudant) but has not been tested yet.*
+
+You will first have to create your own cloudb database named 'knot-notes' and fill the settings in the application for its url (__not__ including the database name), and credentials. Warning: these credentials are stored unencrypted in the local http database!
 
 When finished, it should be able to store the notes locally in the browser database and be synchronized with a CouchDB (or Couchbase or Cloudant as you like) database server so that you can use it on different devices and yoy can share your notes with otehr people.
 
