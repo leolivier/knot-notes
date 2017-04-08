@@ -287,11 +287,14 @@ export class DataService {
 
   deleteNote(id: string): Promise<void> {
     const that = this;
-    /* IDs must be a string */
-    return that.db.get(+id, function(error, doc) {
-      that.db.remove(doc, function(err, resp) {
-        return (err ? that.handleError(err) : new Promise(resolve => resolve()));
-      });
+    return that.db.get(id, function(error, doc) {
+      if (error) {
+        that.handleError(error);
+      } else {
+        that.db.remove(doc, function(err, resp) {
+          return (err ? that.handleError(err) : new Promise(resolve => resolve()));
+        });
+      }
     });
   }
 }
