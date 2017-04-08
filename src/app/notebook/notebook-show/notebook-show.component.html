@@ -4,7 +4,7 @@
 </div>
 <ul class="items">
 	<li *ngFor="let n of notes" (click)="selectNote(n)" [class.selected-item]="n==selectedNote">
-	    <span class="badge"><i class=" fa fa-sticky-note-o"></i></span>
+	    <i class="badge fa fa-sticky-note-o"></i>
 	    <span *ngIf="!isEditable(n)" (dblclick)="startEdition(n)" 
 	    	draggable="true" (dragstart)="dragNote($event, n)"
 	    	(drop)="dropNote($event, n)" (dragover)="allowDropNote($event)">
