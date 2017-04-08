@@ -1,3 +1,5 @@
+import { Crypto } from './crypto';
+
 export const knot_notes_dbname = 'knot-notes';
 
 export class RemoteDBSettings {
@@ -16,5 +18,6 @@ export class Settings {
   useRemoteDB = false;
   remoteDBSettings = new RemoteDBSettings;
   crypt = false;
-  cryptoKey: string;
+  cryptoKey: JsonWebKey;
+  // passphrase: string;
 }
