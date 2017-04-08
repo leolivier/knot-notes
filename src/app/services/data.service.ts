@@ -67,14 +67,19 @@ export class DataService {
     }
     const that = this;
     return new Promise(resolve => {
-      that.db.get('settings').then(doc => {
-        that.settings = doc as Settings;
-        if (!that.settings.remoteDBSettings) { that.settings.remoteDBSettings = new RemoteDBSettings(); }
-        resolve(that.settings);
-      }).catch (err => {
-        that.settings = new Settings(); // default empty settings
-        that.handleError(err);
-      });
+      that.db.get('settings')
+        .then(doc => {
+          that.settings = doc as Settings;
+          if (!that.settings.remoteDBSettings) { that.settings.remoteDBSettings = new RemoteDBSettings(); }
+          resolve(that.settings);
+        })
+        .catch (err => {
+          if (err.name === 'not_found') {
+            that.settings = new Settings(); // default empty settings
+          } else {
+            that.handleError(err);
+          }
+        });
     });
   }
 
