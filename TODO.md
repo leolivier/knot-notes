@@ -6,7 +6,7 @@
 * Manage css for tree node  at the right place
 * Probably don't work on IE
  
-## Features requests
+## Features/Enhancements requests
 * Better management of errors
 * Internationalization
 * Crypt content
@@ -17,7 +17,7 @@
 * Move to Angular 4
 * Implement end to end (e2e) tests
 
-#" Ideas
+## Ideas
 * Mix list of notes inside the notebook tree
 
 
