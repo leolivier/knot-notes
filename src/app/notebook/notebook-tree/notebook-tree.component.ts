@@ -26,7 +26,7 @@ const actionMapping: IActionMapping = {
   moduleId: module.id,
   selector: 'app-notebook-tree',
   templateUrl: './notebook-tree.component.html',
-  styleUrls: ['./notebook-tree.component.css']
+  styleUrls: ['./notebook-tree.component.scss']
 })
 export class NotebookTreeComponent implements OnInit, AfterViewInit {
 

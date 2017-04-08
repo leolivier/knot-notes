@@ -28,7 +28,7 @@ class Label { // for placeholder mgt
   moduleId: module.id,
   selector: 'app-note-editor',
   templateUrl: './note-editor.component.html',
-  styleUrls: ['./note-editor.component.css']
+  styleUrls: ['./note-editor.component.scss']
 })
 export class NoteEditorComponent implements AfterViewInit, OnDestroy {
   private _note: Note;
@@ -106,6 +106,7 @@ export class NoteEditorComponent implements AfterViewInit, OnDestroy {
       this.save();
     });
     editor.on('blur', () => editor.fire('keyup'));
+    editor.on('change', () => editor.fire('keyup'));
   }
 
   initEditor(editor) {

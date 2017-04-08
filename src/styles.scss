@@ -1,13 +1,19 @@
-/* Master Styles */
+@import 'skin.scss'; 
+
+// Master Styles
 h1, .title {
-  color: #369;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 250%;
+  color: $title_color;
+  font {
+  	family: Arial, Helvetica, sans-serif;
+  	size: 250%;
+  }
 }
 h2, h3 {
-  color: #444;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: lighter;
+  color: $subtitle_color;
+  font {
+  	family: Arial, Helvetica, sans-serif;
+  	weight: lighter;
+  }
 }
 h3 {
   text-align: center; margin-bottom: 0;
@@ -19,7 +25,7 @@ body {
   margin: 2em;
 }
 body, input[text], button {
-  color: #888;
+  color: $dark_grey;
   font-family: Cambria, Georgia;
 }
 a {
@@ -43,43 +49,47 @@ a {
 /* buttons */
 button {
   font-family: Arial;
-  background-color: #eee;
+  background-color: $light_color;
   border: none;
   padding: 0.2em 0.4em;
   border-radius: 4px;
   cursor: pointer;
   cursor: hand;
-}
-button:hover {
-  background-color: #cfd8dc;
-}
-button:disabled {
-  background-color: #eee;
-  color: #aaa;
-  cursor: auto;
+
+  :hover {
+  	background-color: $light_color_sel;
+  }
+  :disabled {
+  	background-color: $light_color;
+  	color: $dark_grey;
+  	cursor: auto;
+  }
 }
 
-/* Navigation link styles */
-nav a {
-  padding: 5px 10px;
-  text-decoration: none;
-  margin-right: 10px;
-  margin-top: 10px;
-  display: inline-block;
-  background-color: #eee;
-  border-radius: 4px;
+/* Navigation link styles 
+nav {
+  a {
+    padding: 5px 10px;
+    text-decoration: none;
+    margin-right: 10px;
+    margin-top: 10px;
+    display: inline-block;
+    background-color: $light_color;
+    border-radius: 4px;
+    
+    :visited, :link {
+      color: $dark_color;
+    }
+    :hover {
+      color: $dark_color_sel;
+      background-color: $light_color_sel;
+    }
+    .active {
+      color: $dark_color_sel;
+    }
+ }
 }
-nav a:visited, a:link {
-  color: #607D8B;
-}
-nav a:hover {
-  color: #039be5;
-  background-color: #CFD8DC;
-}
-nav a.active {
-  color: #039be5;
-}
-
+*/
 /* icons */
 .icon {
   width: 48px;
@@ -93,79 +103,78 @@ nav a.active {
   list-style-type: none;
   padding: 0;
   width: 24em;
-}
-.items li {
-  cursor: pointer;
-  position: relative;
-  left: 0;
-  background-color: #EEE;
-  margin: .5em;
-  padding: /*.3em 0;*/ 0;
-  height: 1.6em;
-  border-radius: 4px;
-  display: flex;
-  flex-flow: row;
-}
-.items li:hover {
-  color: #607D8B;
-  background-color: #DDD;
-  left: .1em;
-}
-.items li.selected {
-  background-color: #CFD8DC;
-  color: white;
-}
-.items li.selected:hover {
-  background-color: #BBD8DC;
-}
-.items .text {
-  position: relative;
-/*  top: -3px;*/
-  text-align: left;
-}
-.items .badge {
-  display: inline-block;
-  font-size: small;
-  color: white;
-  padding: 0.8em 0.7em 0 0.7em;
-  background-color: #607D8B;
-  line-height: 1em;
-  position: relative;
-  left: 1px;
-  top: -4px;
-  height: 1.8em;
-  margin-right: .8em;
-  border-radius: 4px 0 0 4px;
-  flex: none !important;
-}
-.items button {
-  flex:none;
-  padding: 0;
-  min-width: 1.5em;
-  margin-left: 2px;
-  visibility: hidden;
-}
-.items li:hover button {
-  visibility: visible;
-}
-.items span:last-of-type, .items input {
-  flex: auto;
-  text-align: left;
-}
-.items .selected-item {
-  background-color: #90bbdf;
-}
-.items .selected-item button {
-  visibility: visible;
-}
 
-.items-drop-zone {
-  height: 2px;	
-  visibility: hidden;
-}
-.items-drop-zone:hover {
-  height: 2px;
-  visibility:visible;
+  li {
+    cursor: pointer;
+    position: relative;
+    left: 0;
+    background-color: $very_light_color;
+    margin: .5em;
+    padding: /*.3em 0;*/ 0;
+    height: 1.6em;
+    border-radius: 4px;
+    border: 1px solid $dark_color;
+    display: flex;
+    flex-flow: row;
+    
+    button {
+      flex:none;
+      padding: 0;
+      min-width: 1.5em;
+      margin-left: 2px;
+      visibility: hidden;
+    }
+
+    &:hover {
+      color: $dark_color;
+      background-color: $light_color_sel;
+      left: .1em;
+      & button { visibility: visible !important; }
+    }
+        
+    .selected {
+      background-color: $light_color_sel; //#CFD8DC;
+      color: $light_color;
+    
+	  &:hover {
+  		background-color: $light_color_sel; //#BBD8DC;
+	  }
+    }
+    
+
+  }
+
+  .text {
+    position: relative;
+    text-align: left;
+  }
+
+  .badge {
+    display: inline-block;
+    // font-size: small;
+    background-color: $dark_color;
+    color: $very_light_color;
+    padding: 4px; // 0.8em 0.7em 0 0.7em;
+    padding-right: 4px !important;
+    //line-height: 1em;
+    position: relative;
+    //left: 0px;
+    //top: -4px;
+    //height: 1.8em;
+    margin-right: .8em;
+    //border-radius: 4px 0 0 4px;
+    flex: none !important;
+  }
+
+  span:last-of-type, input {
+  	flex: auto;
+  	text-align: left;
+  }
+  .selected-item {
+ 	background-color: $dark_color_sel;
+    button { visibility: visible; }
+  }
+  
 }
 
 
@@ -175,9 +184,7 @@ nav a.active {
   padding-right: 20px;
   padding-bottom: 20px;
   flex:none;
-}
-[class*='col-']:last-of-type {
-  padding-right: 0;
+  :last-of-type { padding-right: 0; }
 }
 
 .grid {
@@ -190,10 +197,10 @@ nav a.active {
   padding: 10px 0;
   display:flex;
   flex-flow: row;
-}
-.grid-pad > [class*='col-']:last-of-type {
-  padding-right: 20px;
-  flex:auto;
+  > [class*='col-']:last-of-type {
+    padding-right: 20px;
+    flex:auto;
+  }
 }
 @media (max-width: 600px) {
   .module {
@@ -213,54 +220,19 @@ nav a.active {
 .module {
   padding: 0.5em;
   text-align: center;
-  color: #fff;
+  color: $dark_color; 
  /* min-width: 480px;*/
-  background-color: #607D8B;
+  background-color: $light_color;
   border-radius: 4px;
-}
-.module:hover {
-/*  background-color: #FFF;
-  color: #607d8b;*/
-  cursor: pointer;
-}
+  border: 2px solid $dark_color
+
+  :hover { cursor: pointer; }
 /* overrides items color in module */
-.module .items li {
-  color:#607D8B;
+  .items li { color:$dark_color; }
 }
 
 .full-height {
   height:100%;
-}
-
-
-/* nodetree */
-/* should be in notebook/notebook-tree/notebook-tree.css
-   but does not work there */
-.tree-wrapper {
-  height: 10em;
-}
-
-.notebookTree, .tree  {
-  width: 300px;
-}
-
-.node-content-wrapper, .tree-children {
-  position: relative;
-}
-
-.node-content-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  text-align: left;
-  align-items: baseline;
-  padding: 0 0 0 2px !important;
-  min-height: 1.5em;
-  border-radius: 4px;
-}
-
-.node-content-wrapper {
-  flex-grow: 1;
-  position: relative;
 }
 
 .an-pull-right {
@@ -268,63 +240,95 @@ nav a.active {
   right: 0;
   top:0;
   visibility: hidden;
-}
-.an-pull-right button {
-  padding: 0;
-  min-width: 1.5em;
-}
-.node-content-wrapper::before, .tree-children::after {
-  content: "";
-  position: absolute;
+  button {
+    padding: 0;
+    min-width: 1.5em;
+  }
 }
 
-.node-content-wrapper:hover { 
-  background: #a0c7ff; 
-  color: #607d8b;
-  /*left: .1em;*/
+/* nodetree */
+/* should be in notebook/notebook-tree/notebook-tree.scss
+   but does not work there */
+.notebookTree, .tree  {
+  width: 300px;
 }
 
+.tree-wrapper {
+  height: 10em;
 
-.node-content-wrapper::before {
-  border-bottom: 1px solid lightgrey;
-  border-left: 1px solid lightgrey;
-  height: 28px;
-  top: -17px;
-  width: 20px;
-  left: -28px;
+  .tree-children {
+    position: relative;
+  }
+
+  .node-content-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    text-align: left;
+    align-items: baseline;
+    padding: 0 0 0 2px !important;
+    min-height: 1.5em;
+    border-radius: 4px;
+    flex-grow: 1;
+    position: relative;
+    color: $dark_color;
+    //background-color: $very_light_color;
+    margin-right: 0.2em;
+  
+    &:hover { 
+      color: $dark_color; 
+      left: .1em; 
+    }
+
+	&::before {
+	  content: "";
+	  position: absolute;
+	  border-bottom: 1px solid lightgrey;
+	  border-left: 1px solid lightgrey;
+	  height: 28px;
+	  top: -15px;
+	  width: 20px;
+	  left: -25px;
+	}
+  }
+  
+  
+  .tree-children::after {
+    content: "";
+    position: absolute;
+    border-left: 1px solid lightgrey;
+    height: 100%;
+    top: -11px;
+    left: -15px;
+  }
+  
+  .tree-node-leaf > .node-wrapper > .node-content-wrapper::before {
+    width: 25px;
+  }
+
+  .tree-node-focused > .node-wrapper > .node-content-wrapper {
+    background-color: $light_color_sel !important;   
+    color: $dark_color !important;
+  } 
+
+  .tree-node-active > .node-wrapper > .node-content-wrapper {
+    background-color: $dark_color_sel !important;
+    border-radius: 4px;
+  }
+
+  /* show buttons if focused or active or hover */
+  .tree-node-active  > .node-wrapper > .node-content-wrapper .an-pull-right,
+  .tree-node-focused > .node-wrapper > .node-content-wrapper .an-pull-right,
+  .node-content-wrapper:hover .an-pull-right {
+    visibility: visible;
+  }
+
+  treenode:last-child > .tree-node > .tree-children::after {
+    border-left: none;
+  }
+
+  .toggle-children {
+    z-index: 1;
+  }
+
 }
 
-.tree-node-leaf > .node-wrapper > .node-content-wrapper::before {
-  width: 25px;
-}
-
-.tree-node-focused > .node-wrapper > .node-content-wrapper {
-  background-color: #bedeff !important;  
-  color: #607d8b !important;
-}
-
-.tree-node-active > .node-wrapper > .node-content-wrapper {
-  background-color: #90bbdf !important;
-  border-radius: 4px;
-}
-/* show buttons if focused or active or hover */
-.tree-node-active  > .node-wrapper > .node-content-wrapper .an-pull-right,
-.tree-node-focused > .node-wrapper > .node-content-wrapper .an-pull-right,
-.node-content-wrapper:hover .an-pull-right {
-  visibility: visible;
-}
-
-.tree-children::after {
-  border-left: 1px solid lightgrey;
-  height: 100%;
-  top: -15px;
-  left: -15px;
-}
-
-treenode:last-child > .tree-node > .tree-children::after {
-  border-left: none;
-}
-
-.toggle-children {
-  z-index: 1;
-}

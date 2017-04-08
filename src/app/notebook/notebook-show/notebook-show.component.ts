@@ -8,7 +8,7 @@ import { DataService } from '../../services/data.service';
   moduleId: module.id,
   selector: 'app-notebook-show',
   templateUrl: './notebook-show.component.html',
-  styleUrls: ['./notebook-show.component.css']
+  styleUrls: ['./notebook-show.component.scss']
 })
 export class NotebookShowComponent {
 

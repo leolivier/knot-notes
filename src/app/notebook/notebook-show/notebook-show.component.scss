@@ -1,6 +1,8 @@
+@import "../../../skin"; 
+
 .notebook-title {
-  background-color: #EEE;
-  color:#607D8B;
-  margin: -6px -6px 0px -6px;
+  background-color: $very_light_color;
+  color: $dark_color; 
+  margin: -6px 0px 0px -6px;
   border-radius: 4px;
 }
