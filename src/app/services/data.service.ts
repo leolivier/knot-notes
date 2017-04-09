@@ -136,10 +136,9 @@ export class DataService {
       } else if (!change.deleted) { // else unknown note deleted
         // A note was added
         if (!this.notes) {
-          this.notes[0] = new Note(change.doc);
-        } else {
-          this.notes.push(new Note(change.doc));
+          this.notes = [];
         }
+        this.notes.push(new Note(change.doc));
       }
     }
   }
