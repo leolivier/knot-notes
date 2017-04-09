@@ -8,9 +8,9 @@
       "root": "src",
       "outDir": "dist",
       "assets": [
-		  "assets",
-		  "favicon.ico"
-		],
+        "assets",
+        "favicon.ico"
+      ],
       "index": "index.html",
       "main": "main.ts",
       "polyfills": "polyfills.ts",
@@ -43,8 +43,8 @@
         "../node_modules/tinymce/plugins/media/plugin.js",
         "../node_modules/tinymce/plugins/contextmenu/plugin.js"
       ],
+      "environmentSource": "environments/environment.ts",
       "environments": {
-        "source": "environments/environment.ts",
         "dev": "environments/environment.ts",
         "prod": "environments/environment.prod.ts"
       }
