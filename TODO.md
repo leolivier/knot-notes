@@ -2,7 +2,8 @@
 
 ## Bugs
 * Initialization (first usage) randomly working or not
-* Probably don't work on IE
+* Probably don't work on IE (not tested)
+* css need some fix in Firefox
  
 ## Features/Enhancements requests
 * Don't save at each note change, add a timeout between 2 saves
