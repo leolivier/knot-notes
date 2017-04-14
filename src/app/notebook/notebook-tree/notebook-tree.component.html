@@ -1,0 +1,24 @@
+<div class="tree-wrapper">
+	<tree-root #notebookTree [nodes]="rootNotebook" [focused]="true"  
+			(onActivate)="selectNotebook($event)" [options]="customTemplateStringOptions" class="notebookTree">
+	 <ng-template #treeNodeTemplate let-node="node" let-index="index">
+	    <span *ngIf="!isEditable(node.data.id)" (dblclick)="startEdition(node.data.id)"
+	    	i18n-title title="double clic to edit, drag&drop to change parent">
+	    	{{ node.data.name }}
+	    </span>
+	    <input #notebookInput *ngIf="isEditable(node.data.id)" [(ngModel)]="node.data.name" 
+	    	i18n-placeholder placeholder="notebook name" 
+	    	i18n-title title="Enter to store change, escape to cancel"
+	    	(keyup)="checkEndEdition($event)" (blur)="endEdition()" (click)="notebookInput.select()">
+	    <span class="an-pull-right">
+		    <button (click)="addNotebook($event, node.data)" i18n-title title="create sub-notebook">
+		    	<i class="fa fa-plus-square"></i>
+		    </button>
+		    <button *ngIf="node.data.id!=='rootNotebook'" 
+		    	(click)="deleteNotebook($event, node.data)" i18n-title title="delete notebook">
+		    	<i class="fa fa-trash-o"></i>
+		    </button>
+		</span>
+	  </ng-template> 
+	</tree-root>
+</div>

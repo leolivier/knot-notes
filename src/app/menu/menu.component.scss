@@ -1,0 +1,44 @@
+.menu-wrapper {
+	display: inline-block;
+
+	.menu-button {
+		background-color: #fff;	
+		border:none;
+		&:hover {
+			border:none;
+			background-color: #fafafa;	
+		}
+	}
+	.menu-dropdown {
+		position: absolute;
+		float: left;
+		background-color: #fff;
+		z-index: 1000;
+	}
+	.menu {
+		list-style-type: none;
+	    margin: 0px;
+	    padding-left: 5px;
+	}
+	.menu-item {
+	    padding: 5px;
+		border: solid 1px #607D8B;
+		&:hover {
+			background-color: #eee;
+			cursor: pointer;
+		}
+	}
+}	
+
+/* put menu on right side */
+.menu-right {
+	float: right;	
+	.menu-button { right:5px; }
+	.menu-dropdown {
+		float: right;
+		right: 5px;
+	}
+	.menu {
+	  padding-right: 5px;
+	}
+}

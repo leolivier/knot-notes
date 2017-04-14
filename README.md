@@ -1,28 +1,48 @@
-# KnotNew
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0.
+# KNOT NOTES ![](https://github.com/leolivier/knot-note/raw/master/src/assets/images/knot-note-48x48.png)
 
-## Development server
+Yet another note editor (more or less evernote like)...
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Knot-notes is able to store the notes locally in the browser's own database and is also able to store the notes in a CouchDB database on your own server.
 
-## Code scaffolding
+It is written with the help of
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
+* Angular (v4) for the GUI, 
+* PouchDB (for local database and syncing)
+* and CouchDB (for server database).
 
-## Build
+Don't hesitate to create features requests or issues on [GitHub](https://github.com/leolivier/knot-note/issues).
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+See [TODO.md](doc/TODO.md) to check what's in the pipe currently.
 
-## Running unit tests
+__WARNING: This is an alpha release!__
+------------
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+##Installing 
 
-## Running end-to-end tests
+##Local database install only
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
+*With this kind of install, you can save your notes inside your browser only. You can't share your notes in another browser or on another device.*
 
-## Further help
+* You must have an http server installed (Apache, NGinx, ...)
+* Create a directory named knot-notes in the root of your http server 
+* Download the [1.0.alpha-1 release](https://github.com/leolivier/knot-note/raw/master/knot-notes-1.0.alpha-1.zip) zip file, 
+unzip it in the directory above.
+* If necessary, manage the server configuration so that the new directory can be accessed
+* That's it!
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+###Server database
+
+*With this install, you can share your notes between different devices and browsers.*
+
+* First, proceed to the *Local database install* described above.
+* See [CouchDB site](http://docs.couchdb.org/en/latest/) for learning how to install and run CouchDB (I did it on a raspberrypi 2 and it works like a charm). 
+
+*This should also work with all databases compatible with [PouchDB](https://pouchdb.com) (CouchBase, Cloudant) but has not been tested yet.*
+
+* Create your own Couchdb database named 'knot-notes'
+* Fill the settings in the application for its url (__not__ including the database name), and credentials. __Warning:__ these credentials are currently stored unencrypted in the local database!
+
+##Developers
+
+Please see [DEVELOPERS.md](doc/DEVELOPPERS.md) for installing the devt environment  

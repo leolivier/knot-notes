@@ -1,0 +1,34 @@
+<div class="settings">
+	<fieldset [disabled]="!useRemoteDB">
+		<legend i18n>Remote CouchDB server 
+			<input type="checkbox" 
+				[(ngModel)]="useRemoteDB"
+				i18n-title title="check this box to enter your remote db server config">
+		</legend>
+		<label i18n>Database server base url: </label><br/>
+		<input type="text" 
+			i18n-placeholder placeholder="https://<my-host>.<my-domain>" 
+			i18n-title title="cloudant, couchdb, couchbase remote url\nDon't put the database name in the url" 
+			[(ngModel)]="settings.remoteDBSettings.baseUrl"><br/>
+		<label i18n>Database user id: </label><br/>
+		<input type="text" 
+			i18n-placeholder placeholder="john-doe" 
+			[(ngModel)]="settings.remoteDBSettings.username" 
+			i18n-title title="the user id to connect to the database"><br/>
+		<label i18n>Database password: </label><br/>
+		<input type="password" 
+			i18n-placeholder placeholder="xXxoOo" 
+			[(ngModel)]="settings.remoteDBSettings.password" 
+			i18n-title title="the user password to connect to the database"><br/>
+		<label i18n>Encrypt data:</label>
+		<input type="checkbox" 
+			[(ngModel)]="settings.crypt" (click)="checkCrypto()"
+			i18n-title title="If you check this box, the content of the database will encrypted. Not yet implemented!">
+		<label *ngIf="showKey" i18n i18n-title title="The computed encryption key">Encryption key:{{showKey}}</label>
+	</fieldset>
+	<button (click)="save()" i18n 
+		i18n-title title="Save the settings in the local database. If the remote database is correctly configured, the sync begins...">
+		Save settings
+	</button>
+	<button i18n (mousedown)="showEncryptionKey()" (mouseup)="showKey=undefined">Show encryption key</button>
+</div>

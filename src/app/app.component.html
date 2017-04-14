@@ -1,3 +1,8 @@
-<h1>
-  {{title}}
-</h1>
+<header>
+	<img src="assets/images/knot-note-48x48.png" class="icon">
+	<span class="title">{{title}}</span>
+	<app-menu [values]="menuValues" [position]="'right'" (onSelect)="action($event)"></app-menu>
+</header>
+
+<router-outlet></router-outlet>
+<app-status-bar [status]="status"></app-status-bar>
