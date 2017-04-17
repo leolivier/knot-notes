@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, EventEmitter, Input, Output } from '@angular/core';
 import { Note } from '../note';
+import { StatusEmitter } from '../status-bar/status';
+
 // import { NoteService } from '../note.service';
 import { DataService } from '../services/data.service';
 import { Subject } from 'rxjs/Subject';
@@ -32,7 +34,9 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
   private contentSubject = new Subject<string>();
 
 //  constructor(private noteService: NoteService) {}
-  constructor(private noteService: DataService) {}
+  constructor(
+    private noteService: DataService,
+    private alerter: StatusEmitter) {}
 
   ngOnInit(): void {
     this.contentSubject
@@ -107,7 +111,7 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
     if (title) { this.note.title = title; }
     if (content || title) {
       this.noteService.saveNote(this.note)
-        .catch(reason => alert ('save error:' + JSON.stringify(reason)));
+        .catch(reason => this.alerter.error ('save error:' + JSON.stringify(reason)));
     }
   }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Settings, RemoteDBSettings } from '../settings';
 import { Crypto } from '../crypto';
 import { DataService } from '../../services/data.service';
+import { StatusEmitter } from '../../status-bar/status';
 
 @Component({
   moduleId: module.id,
@@ -20,8 +21,10 @@ export class SettingsComponent implements OnInit {
     if (val && !this.settings.remoteDBSettings) { this.settings.remoteDBSettings = new RemoteDBSettings(); }
   }
 
-  constructor(private dataService: DataService) {
-      this.crypto = new Crypto(dataService);
+  constructor(
+    private dataService: DataService,
+    private alerter: StatusEmitter) {
+      this.crypto = new Crypto(dataService, alerter);
   }
 
   ngOnInit() {

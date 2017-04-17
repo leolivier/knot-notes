@@ -15,7 +15,7 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 
 import { DataService } from './services/data.service';
-import { NoteService } from './services/note.service';
+// import { NoteService } from './services/note.service';
 import { NoteEditorComponent } from './note-editor/note-editor.component';
 import { NotebookShowComponent } from './notebook/notebook-show/notebook-show.component';
 import { NotebookTreeComponent } from './notebook/notebook-tree/notebook-tree.component';
@@ -23,6 +23,7 @@ import { MenuComponent } from './menu/menu.component';
 import { PageNotFoundComponent } from './not-found.component';
 import { SettingsComponent } from './admin/settings/settings.component';
 import { StatusBarComponent } from './status-bar/status-bar.component';
+import { StatusEmitter } from './status-bar/status';
 
 @NgModule({
   imports: [
@@ -44,7 +45,8 @@ import { StatusBarComponent } from './status-bar/status-bar.component';
     SettingsComponent,
     StatusBarComponent
   ],
-  providers: [NoteService, DataService],
+//  providers: [NoteService, DataService],
+  providers: [DataService, StatusEmitter],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

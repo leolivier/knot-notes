@@ -7,9 +7,7 @@ import { Note } from '../note';
 import { Notebook } from '../notebook/notebook';
 import { NoteEditorComponent } from '../note-editor/note-editor.component';
 import { NotebookShowComponent } from '../notebook/notebook-show/notebook-show.component';
-// import { NoteService } from '../note.service';
 import { DataService } from '../services/data.service';
-import { StatusEmitter } from '../status-bar/status';
 
 @Component({
   moduleId: module.id,
@@ -29,8 +27,6 @@ export class DashboardComponent implements OnInit {
   // inject the NoteBookShowComponent
   @ViewChild(NotebookShowComponent)
   private notebookShow: NotebookShowComponent;
-  @Output()
-  onChangeStatus = new StatusEmitter();
 
   constructor(
     private route: ActivatedRoute,
@@ -54,10 +50,6 @@ export class DashboardComponent implements OnInit {
     } else if (obj instanceof Notebook) {
       this.notebookShow.currentNotebook = obj;
     }
-  }
-
-  forwardStatusChange($event) {
-    this.onChangeStatus.emit($event);
   }
 }
 

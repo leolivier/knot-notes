@@ -9,12 +9,13 @@ import 'rxjs/add/operator/toPromise';
 import { Note } from '../note';
 import { Notebook } from '../notebook/notebook';
 import { Settings, knot_notes_dbname, RemoteDBSettings } from '../admin/settings';
+import { StatusEmitter } from '../status-bar/status';
 
 // import { PouchDB } from 'pouchdb';
+//const PouchDB = require('pouchdb');
+
 import * as PouchDB from 'pouchdb';  
 import * as PouchDBFind from 'pouchdb-find';
-
-//const PouchDB = require('pouchdb');
 
 @Injectable()
 export class DataService {
@@ -26,7 +27,9 @@ export class DataService {
   rootNotebook: Notebook;
   notes: Note[];
 
-  constructor(private _http: Http) {
+  constructor(
+    private _http: Http,
+    private alerter: StatusEmitter) {
 
     PouchDB.plugin(PouchDBFind);
     // create/open local database
@@ -41,10 +44,20 @@ export class DataService {
     this.db.setMaxListeners(30);
     // set up changes callback
     this.db.changes({ live: true, since: 'now', include_docs: true })
-      .on('change', (change) => { this.handleChange(change); });
+      .on('change', (change) => { this.handleChange(change); })
+      .on('error', err => this.handleError(err));
+
+    this.getRootNotebook();
+  }
+
+  private handleError(error: any, reject?) {
+    this.alerter.error('An error occurred: ' + error);
+    console.error('An error occurred', error);
+    if (reject) reject(error.message || error);
   }
 
   trySyncToRemote() {
+    const that = this;
     if (this.settings && this.settings.useRemoteDB) {
       // check remote settings
       const rs = this.settings.remoteDBSettings;
@@ -61,7 +74,17 @@ export class DataService {
         }
       };
 
-      this.db.sync(this.remote, options).on('error', err => this.handleError(err));
+      this.db.sync(this.remote, options)
+        .on('error', err => that.handleError(err))
+        .on('change', info => this.handleChange(info))
+  // replication paused (e.g. replication up to date, user went offline)
+        .on('paused', err => this.alerter.warning(err))
+  // replicate resumed (e.g. new changes replicating, user went back online)
+        .on('active', () => this.alerter.info('Sync active'))
+  // a document failed to replicate (e.g. due to permissions)
+        .on('denied', err => this.handleError(err))
+  // handle complete
+        .on('complete', info => this.alerter.info('Sync complete: ' + info));
     }
   }
 
@@ -70,20 +93,18 @@ export class DataService {
       return new Promise (resolve => resolve(this.settings));
     }
     const that = this;
-    return new Promise(resolve => {
-      that.db.get('settings')
-        .then(doc => {
-          that.settings = doc as Settings;
-          if (!that.settings.remoteDBSettings) { that.settings.remoteDBSettings = new RemoteDBSettings(); }
-          resolve(that.settings);
-        })
-        .catch (err => {
-          if (err.name === 'not_found') {
-            that.settings = new Settings(); // default empty settings
-          } else {
-            that.handleError(err);
-          }
-        });
+    return new Promise((resolve, reject) => {
+      that.db.get('settings').then(doc => {
+        that.settings = doc as Settings;
+        if (!that.settings.remoteDBSettings) { that.settings.remoteDBSettings = new RemoteDBSettings(); }
+        resolve(that.settings);
+      }).catch (err => {
+        if (err.name === 'not_found') {
+          that.settings = new Settings(); // default empty settings
+        } else {
+          that.handleError(err, reject);
+        }
+      });
     });
   }
 
@@ -91,16 +112,15 @@ export class DataService {
     const that = this;
     if (settings) { that.settings = settings; }
     const o = JSON.parse(JSON.stringify(that.settings));
-    return new Promise(resolve => {
-      that.db.put(o, function(error, response) {
-        if (error) { that.handleError(error); }
+    return new Promise((resolve, reject) => {
+      that.db.put(o).then(response => {
         if (response && response.ok) {
-          // be sure to refresh rev number
+        // be sure to refresh rev number
           that.settings.rev = response.rev;
           resolve(that.settings);
           that.trySyncToRemote();
         }
-      });
+      }).catch(error => that.handleError(error, reject))
     });
   }
 
@@ -112,7 +132,7 @@ export class DataService {
 
     if (this.rootNotebook && this.rootNotebook.id === change.id) {
       if (change.deleted) {
-        alert('root notebook deleted!!!');
+        this.alerter.error('root notebook deleted!!!');
       } else if (this.rootNotebook.rev !== change.doc._rev) { // do nothing if same rev
         this.rootNotebook.updateFrom(change.doc);
       }
@@ -147,15 +167,10 @@ export class DataService {
     }
   }
 
-  private handleError(error: any): Promise<any> {
-    // TODO: manage error correctly
-    console.error('An error occurred', error);
-    return Promise.reject(error.message || error);
-  }
-
   getRootNotebook(): Promise<Notebook> {
     const that = this;
-    return new Promise(resolve => {
+//    if (this.rootNotebook) { return Promise.resolve(this.rootNotebook); } must reread if changed by someone else
+    return new Promise((resolve, reject) => {
       that.db.get(Notebook.rootId).then(doc => {
         if (that.rootNotebook) {
           that.rootNotebook.updateFrom(doc);
@@ -168,7 +183,7 @@ export class DataService {
           // initial root notebook
           that.saveRootNotebook(new Notebook({_id: Notebook.rootId, name: '/'}));
         } else {
-          that.handleError(error);
+          that.handleError(error, reject);
         }
       });
     });
@@ -178,44 +193,29 @@ export class DataService {
     const that = this;
     this.rootNotebook = root;
     const o = JSON.parse(root.toJSON());
-    return new Promise(resolve => {
-      this.db.put(o, function(error, response) {
-        if (error) { that.handleError(error); }
+    return new Promise((resolve, reject) => {
+      this.db.put(o).then(response => {
         if (response && response.ok) {
           // be sure to refresh rev number
           root.rev = response.rev;
           resolve(root);
         }
-      });
-    });
+      }).catch(error => that.handleError(error, reject))
+     });
   }
 
   getNotebook(notebookid: string): Promise<Notebook> {
     const that = this;
     if (this.rootNotebook) {
-      return new Promise(resolve => resolve(that.rootNotebook.findById(notebookid)));
+      const nb = that.rootNotebook.findById(notebookid);
+      return (nb? Promise.resolve(nb) : Promise.reject('Notebook #' + notebookid + ' not found'));
     }
     return this.getRootNotebook().then(nb => nb.findById(notebookid));
   }
 
   getNotebookNotes(notebookid: string): Promise<Note[]> {
     const that = this;
-    return new Promise(resolve => {
-      /*
-      that.db.query((doc, emit) => {
-        if (doc.notebookid && doc.notebookid === notebookid) { emit(doc); }
-      },
-        {
-          include_docs: true,
-          limit: 60,
-          descending: true,
-        }).then((result) => {
-          that.notes = [];
-          const docs = result.rows.map((row) => { that.notes.push(new Note(row.doc)); });
-          that.notes.reverse();
-          resolve(that.notes);
-        }).catch((error) => that.handleError(error));
-    */
+    return new Promise((resolve, reject) => {
       that.db.createIndex({
         // index: {fields: ['notebookid', 'order']}
         // index: {fields: ['order', 'notebookid']}
@@ -235,7 +235,7 @@ export class DataService {
           that.notes.sort((n1, n2) => n1.order - n2.order);
           // that.notes.reverse();
           resolve(that.notes);
-        }).catch((error) => that.handleError(error));
+        }).catch((error) => that.handleError(error, reject));
       });
     });
   }
@@ -243,15 +243,15 @@ export class DataService {
   getNote(id: string): Promise<Note> {
     const that = this;
     const n = that.notes.find(nt => nt.id === id);
-    if (n) { return new Promise(resolve => resolve(n)); }
-    return new Promise(resolve => {
+    if (n) { return Promise.resolve(n); }
+    return new Promise((resolve, reject) => {
       that.db.get(id).then(doc => {
         doc.id = doc._id;
         const nt = new Note(doc);
         that.notes.push(nt);
         resolve(nt);
-        if (!that.rootNotebook) {
-          that.getRootNotebook().then(() => that.getNotebookNotes(nt.notebookid));
+        if (!that.rootNotebook) { // load root notebook if not already done
+          that.getRootNotebook().then(() => that.getNotebookNotes(nt.notebookid)); // load notebook if not already done
         }
       });
     });
@@ -261,15 +261,15 @@ export class DataService {
     const that = this;
     const o = JSON.parse(JSON.stringify(note));
     o['modified'] = new Date().getTime();
-    return new Promise(resolve => {
-      that.db.put(o, function(error, response) {
-        if (error) { that.handleError(error); }
+    return new Promise((resolve, reject) => {
+      that.db.put(o).then(response => {
         if (response && response.ok) {
           // be sure to refresh rev number
           note.rev = response.rev;
           resolve(note);
+          that.alerter.info("Note saved");
         }
-      });
+      }).catch(error => that.handleError(error, reject))
     });
     // TODO: manage attachments and images
     /*         if(noteform.attachment.files.length){
@@ -295,19 +295,15 @@ export class DataService {
           } */
   }
 
-  deleteNote(id: string): Promise<void> {
+  deleteNote(id: string): Promise<any> {
     const that = this;
-    return that.db.get(id, function(error, doc) {
-      if (error) {
-        that.handleError(error);
-      } else {
-        that.db.remove(doc, function(err, resp) {
-          return (err ? that.handleError(err) : new Promise(resolve => resolve()));
-        });
-      }
+    return new Promise((resolve, reject) => {
+      that.db.get(id).then(doc => {
+        that.db.remove(doc).then(() => resolve())
+          .catch(err => that.handleError(err, reject))
+      }).catch(error => that.handleError(error, reject))
     });
   }
-}
 
 /*
       that.db.allDocs({
@@ -329,3 +325,4 @@ export class DataService {
           }
         }
  */
+}

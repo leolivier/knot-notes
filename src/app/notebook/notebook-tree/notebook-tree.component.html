@@ -3,7 +3,7 @@
 			(onActivate)="selectNotebook($event)" [options]="customTemplateStringOptions" class="notebookTree">
 	 <ng-template #treeNodeTemplate let-node="node" let-index="index">
 	    <span *ngIf="!isEditable(node.data.id)" (dblclick)="startEdition(node.data.id)"
-	    	i18n-title title="double clic to edit, drag&drop to change parent">
+	    	i18n-title title="double clic to edit, drag&amp;drop to change parent">
 	    	{{ node.data.name }}
 	    </span>
 	    <input #notebookInput *ngIf="isEditable(node.data.id)" [(ngModel)]="node.data.name" 

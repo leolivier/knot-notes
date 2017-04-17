@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Note, NoteType } from '../../note';
 import { Notebook } from '../../notebook/notebook';
 import { DataService } from '../../services/data.service';
+import { StatusEmitter } from '../../status-bar/status';
 
 @Component({
   moduleId: module.id,
@@ -21,7 +22,7 @@ export class NotebookShowComponent {
     if (!notebook) { return; }
     this.noteService.getNotebookNotes(notebook.id)
       .then(notes => this.notes = notes)
-      .catch(reason => alert('error in show notebook: ' + reason));
+      .catch(reason => this.alerter.error('Error in show notebook: ' + reason));
   }
   get currentNotebook(): Notebook { return this._currentNotebook; }
 
@@ -30,7 +31,9 @@ export class NotebookShowComponent {
   notes: Note[];
   selectedNote: Note;
 
-  constructor(private noteService: DataService) {}
+  constructor(
+    private noteService: DataService,
+    private alerter: StatusEmitter) {}
 
   name(): string {
     return (this.currentNotebook ? this.currentNotebook.fullName() : 'no selection');
@@ -86,7 +89,7 @@ export class NotebookShowComponent {
         this.selectedNote = note;
         this.startEdition(note);
       })
-      .catch(reason => alert('cannot create note: ' + JSON.stringify(reason)));
+      .catch(reason => this.alerter.error('cannot create note: ' + JSON.stringify(reason)));
   }
   deleteNote(note: Note): void {
     this.noteService

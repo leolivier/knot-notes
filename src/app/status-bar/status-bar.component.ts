@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Status } from '../status-bar/status';
+import { StatusEmitter, Status } from '../status-bar/status';
+
+const StatusClasses = [ 'error', 'warning', 'info']; // must match StatusKind
 
 @Component({
   selector: 'app-status-bar',
@@ -7,11 +9,17 @@ import { Status } from '../status-bar/status';
   styleUrls: ['./status-bar.component.scss']
 })
 export class StatusBarComponent implements OnInit {
-  @Input()
-  status: Status;
-  constructor() { }
+  status = new Status;
+
+
+  constructor(private alerter: StatusEmitter) {}
 
   ngOnInit() {
+    this.alerter.subscribe(status => this.status = status);
   }
+
+  class(): string { 
+    return StatusClasses[this.status.kind] + '-status'; 
+  } 
 
 }

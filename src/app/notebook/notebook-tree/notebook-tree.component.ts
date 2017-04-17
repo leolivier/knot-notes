@@ -31,8 +31,6 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
 
   private _editableNodeId = '';
   private _initialName = '';
-  @Output()
-  onChangeStatus = new StatusEmitter();
 
   customTemplateStringOptions = {
     // displayField: 'subTitle',
@@ -56,7 +54,8 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    private noteService: DataService) {
+    private noteService: DataService,
+    private alerter: StatusEmitter) {
     // creates a pseudo tree (or else the TreeComponent won't update)
     this.initRoot(new Notebook({ name: '/' }));
   }
@@ -79,13 +78,13 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     this.rootNotebook = [root];
     this.selectedNotebook = root;
     // this.notebookTree.treeModel.update();
-    this.onChangeStatus.info('Root initialized');
+    this.alerter.info('Root initialized');
   }
 
   saveRoot() {
     this.noteService.saveRootNotebook(this.rootNotebook[0])
       .then(nb => this.rootNotebook = [nb])
-      .catch(reason => this.onChangeStatus.error(reason));
+      .catch(reason => this.alerter.error(reason));
   }
 
   selectNotebook($event) {

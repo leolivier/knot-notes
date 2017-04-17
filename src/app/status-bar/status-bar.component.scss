@@ -1,0 +1,14 @@
+@import '../../skin';
+
+.info-status {
+    color: $info_msg_color;
+    background-color: $info_msg_bgcolor;
+}
+.warning-status {
+    color: $warning_msg_color;
+    background-color: $warning_msg_bgcolor;
+}
+.error-status {
+    color: $error_msg_color;
+    background-color: $error_msg_bgcolor;
+}

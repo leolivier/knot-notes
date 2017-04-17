@@ -3,6 +3,7 @@
  */
 import { DataService } from '../services/data.service';
 import { Settings } from './settings';
+import { StatusEmitter } from '../status-bar/status';
 
 class CryptObj {data: ArrayBuffer; iv: ArrayBufferView; };
 
@@ -10,7 +11,9 @@ export class Crypto {
 
   key: CryptoKey;
 
-  constructor (private dataService: DataService) {}
+  constructor (
+    private dataService: DataService,
+    private alerter: StatusEmitter) {}
 
   initCrypto(settings: Settings) {
     if (settings.cryptoKey) {
@@ -30,8 +33,10 @@ export class Crypto {
     }
   }
 
-  handleError(error) {
+  handleError(error, reject?) {
+     this.alerter.error('Crypto error: ' + error);
      console.error(error);
+     if (reject) reject(error);
   }
 
   /*
@@ -46,10 +51,7 @@ export class Crypto {
         console.log(key);
         resolve(key);
       },
-      err => {
-        console.log(err);
-        reject(err);
-      });
+      err => this.handleError(err, reject));
     });
   }
 
@@ -75,11 +77,7 @@ export class Crypto {
           this.key = key;
           resolve(key);
         },
-        err => {
-         console.log(err);
-         reject(err);
-        }
-      )
+        err => this.handleError(err, reject))
     );
   }
 
@@ -96,11 +94,7 @@ export class Crypto {
           console.log(key);
           resolve(key);
         },
-        err => {
-         console.log(err);
-         reject(err);
-        }
-      )
+        err => this.handleError(err, reject))
     );
   }
 
@@ -110,7 +104,7 @@ export class Crypto {
    * returns a promise<ArrayBuffer> containing the encrypted data
    */
   encrypt(data: ArrayBuffer): Promise<CryptObj> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       // Don't re-use initialization vectors!
       // Always generate a new iv every time your encrypt!
       // Recommended to use 12 bytes length
@@ -125,9 +119,8 @@ export class Crypto {
           console.log(new Uint8Array(encrypted));
           resolve({data: encrypted, iv: iv } as CryptObj);
         },
-          err => this.handleError(err)
-        );
-      });
+          err => this.handleError(err, reject));
+    });
   }
 
 /*
@@ -137,7 +130,7 @@ export class Crypto {
  * Returns an ArrayBuffer of the decrypted data
  */
   decrypt(encrypted: CryptObj): Promise<ArrayBuffer> {
-    return new Promise (resolve => {
+    return new Promise ((resolve, reject) => {
       window.crypto.subtle.decrypt(
         { name: 'AES-GCM', iv: encrypted.iv },
         this.key, encrypted.data)
@@ -146,7 +139,7 @@ export class Crypto {
         console.log(new Uint8Array(decrypted));
         resolve(decrypted);
       },
-      err => this.handleError(err));
+      err => this.handleError(err, reject));
     });
   }
 

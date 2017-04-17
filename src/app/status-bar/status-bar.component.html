@@ -1,4 +1,3 @@
-<p *ngIf="status" [ngClass]="status.kind + '-status'">
+<p [ngClass]="class()">
   {{status.message}}
 </p>
-<p *ngIf="!status">No message...</p>

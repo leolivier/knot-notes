@@ -1,20 +1,30 @@
 /**
  * Defines a status to be displayed in the status bar
  */
-import { EventEmitter, Output } from '@angular/core';
+import { EventEmitter, Output, Injectable } from '@angular/core';
 
 export enum StatusKind { Error, Warning, Info }
 
 export class Status {
-  kind: StatusKind;
-  message: string;
+  kind = StatusKind.Info ;
+  message = 'No message...';
 }
 
-export class StatusEmitter extends EventEmitter<Status> {
+@Injectable()
+export class StatusEmitter {
+  emitter = new EventEmitter<Status> ();
 
-  error(message: string) { this.emit({message: message, kind: StatusKind.Error}); }
+  private emit(message: string, kind: StatusKind) {
+    this.emitter.emit({message: message, kind: kind} as Status);
+    console.log(message);
+  }
 
-  warning(message: string) { this.emit({message: message, kind: StatusKind.Warning}); }
+  error(message: string) { this.emit(message, StatusKind.Error); }
 
-  info(message: string) { this.emit({message: message, kind: StatusKind.Info}); }
+  warning(message: string) { this.emit(message, StatusKind.Warning); }
+
+  info(message: string) { this.emit(message, StatusKind.Info); }
+
+  subscribe(method) { this.emitter.subscribe(method); }
+
 }
