@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="fac37ff27547e47a93ae6cda6ffcbcd6aac62296" datatype="html">
+        <source>Click in text, and start typing to edit, please...</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="2c8533cde7f6b74afcf4444047503d2e9d1752c0" datatype="html">
+        <source>Create note</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="1e13ef6284824398623306f3978f767e28ac80a1" datatype="html">
+        <source>doucle clic to edit title. drag&amp;drop notes to change their orders</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="463b83983d22c3556bce315aca82e0591b2b6c33" datatype="html">
+        <source>Enter or blur to store the new title. Escape to cancel...</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="516e682c87e51a91b376b4c0f2f3dc1314167da0" datatype="html">
+        <source>delete note</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="7a10381e3edfbad69fb53292d118a525ce101ef4" datatype="html">
+        <source>Remote CouchDB server 
+			<x id="TAG_INPUT" ctype="x-input"/>
+		</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="48d604286593c9a0b368d879492a1541807768a1" datatype="html">
+        <source>check this box to enter your remote db server config</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="3968dfecd1af9222da4ff1da9a37158a8a2744b0" datatype="html">
+        <source>Database server base url: </source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="837c802b2939452205589aa796c81eae8da923e5" datatype="html">
+        <source>https://&lt;my-host&gt;.&lt;my-domain&gt;</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="b2e58bada0ffeb223b3080c9923558712ea053de" datatype="html">
+        <source>cloudant, couchdb, couchbase remote url\nDon&apos;t put the database name in the url</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="fbb274bd671dc18ec886def361ab992b97ff38da" datatype="html">
+        <source>Database user id: </source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="4017d3953593be41a495f1f0f842ce37da208b11" datatype="html">
+        <source>john-doe</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="c630f93b9075df49e3a068ee88cd9c0869a4e59f" datatype="html">
+        <source>the user id to connect to the database</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="78aa8cceaba9a41c5cf74f7a09573ee1d12b2c9c" datatype="html">
+        <source>Database password: </source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="3f8a1ffbefb3e6ea3d5c12436da823a0b74b9468" datatype="html">
+        <source>xXxoOo</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="afb07cd5063f504e817c9cc70325ce8a486fd552" datatype="html">
+        <source>the user password to connect to the database</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="b622f5a41a2b7920f8a579b6f0352e3e94407f63" datatype="html">
+        <source>Encrypt data:</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="ff7411e4de8072151bd3f0704096cce5bbbe776b" datatype="html">
+        <source>If you check this box, the content of the database will encrypted. Not yet implemented!</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="31d2d9429bd27ecb932d62becc011eb9c50944d4" datatype="html">
+        <source>Encryption key:<x id="INTERPOLATION"/></source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="3c1303cba5c01b08ac0bcb73a4a13afde6147833" datatype="html">
+        <source>The computed encryption key</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="022e35aa2f0546651071387a85f2890d28caaa41" datatype="html">
+        <source>
+		Save settings
+	</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="48cdacfb6b57bcfe79724729c623bfb0833c76f2" datatype="html">
+        <source>Save the settings in the local database. If the remote database is correctly configured, the sync begins...</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="5efc0082b9b26032d2baa3ba5a4a40748c865619" datatype="html">
+        <source>Show encryption key</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="49c675974f8df424548858b62e07fca61a433f20" datatype="html">
+        <source>double clic to edit, drag&amp;drop to change parent</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="a49e62bca52acb34a705fb1b24a9451c07dd96e2" datatype="html">
+        <source>notebook name</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="8ff3fbb3c6e33b6e2da492c8dd3a399ac34ae848" datatype="html">
+        <source>Enter to store change, escape to cancel</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="bd9574053369de71fb475f2bba1a310ce71a57c3" datatype="html">
+        <source>create sub-notebook</source>
+        <target/>
+      </trans-unit>
+      <trans-unit id="12e8a2da28459e122cf21fcc3b71489d1308ed99" datatype="html">
+        <source>delete notebook</source>
+        <target/>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
