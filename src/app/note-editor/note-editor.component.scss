@@ -1,14 +1,11 @@
-@import "../../skin"; 
+@import "../../assets/skins"; 
 
-.note-editor-container {
+.note-editor-container {  // + skin-note-editor-container
 	border-radius: 4px;
-	border: solid 1px $dark_color;
 	width:100%;
 	height: 100%;
 
 	header {
-	  background-color: $dark_color;
-	  color: $light_color;
 	  padding-left: .5em;
 	}
 
@@ -21,7 +18,6 @@
 			position: absolute;
 			top: 0;
 			padding: 0 10px 0 10px;
-			color: $dark_grey;
 		}
 		
 		.note-editor {
@@ -31,6 +27,5 @@
 	
 	.title-editor {
 		margin: 0;
-		color: $very_light_color;
 	}
 }

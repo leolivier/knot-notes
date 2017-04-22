@@ -1,0 +1,17 @@
+.settings {
+    * {
+        margin: 5px;
+    }
+    fieldset {
+        padding: 10px;
+        border-radius: 4px;
+    }
+    button {
+       margin: 10px;
+    }
+}
+@media (max-width: 600px) {
+  .settings {
+    font-size: 10px;
+  }
+}

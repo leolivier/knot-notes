@@ -1,10 +1,10 @@
 <div class="grid grid-pad">
   <div class="col-1">
-    <div class="module">
+    <div [ngClass]="settingsService.skin('module')">
     	<app-notebook-tree (onSelectedNotebook)="selectedNotebook=$event" (onChangeStatus)="forwardStatusChange($event)">
     	</app-notebook-tree>
     </div>
-    <div class="module">
+    <div [ngClass]="settingsService.skin('module')">
     	<app-notebook-show (onSelectedNote)="selectedNote=$event; editMode=false" 
     		[notebook]="selectedNotebook"  (onChangeStatus)="forwardStatusChange($event)">
     	</app-notebook-show>

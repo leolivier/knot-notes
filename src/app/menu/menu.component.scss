@@ -2,17 +2,11 @@
 	display: inline-block;
 
 	.menu-button {
-		background-color: #fff;	
 		border:none;
-		&:hover {
-			border:none;
-			background-color: #fafafa;	
-		}
 	}
 	.menu-dropdown {
 		position: absolute;
 		float: left;
-		background-color: #fff;
 		z-index: 1000;
 	}
 	.menu {
@@ -22,9 +16,8 @@
 	}
 	.menu-item {
 	    padding: 5px;
-		border: solid 1px #607D8B;
+//		border: solid 1px #607D8B;
 		&:hover {
-			background-color: #eee;
 			cursor: pointer;
 		}
 	}

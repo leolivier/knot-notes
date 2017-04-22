@@ -1,10 +1,10 @@
-<div class="notebook-title">
+<div [ngClass]="settingsService.skin('notebook-title')">
    <span>{{name()}}</span>
    <button *ngIf="currentNotebook" (click)="newNote()" i18n-title title="Create note">
    	<i class="fa fa-plus-square"></i>
    </button>
 </div>
-<ul class="items">
+<ul [ngClass]="settingsService.skin('items')">
 	<li *ngFor="let n of notes" (click)="selectNote(n)" [class.selected-item]="n==selectedNote">
 	    <i class="badge fa fa-sticky-note-o"></i>
 	    <span *ngIf="!isEditable(n)" (dblclick)="startEdition(n)" 

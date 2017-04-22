@@ -15,6 +15,7 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 
 import { DataService } from './services/data.service';
+import { SettingsService } from './services/settings.service';
 // import { NoteService } from './services/note.service';
 import { NoteEditorComponent } from './note-editor/note-editor.component';
 import { NotebookShowComponent } from './notebook/notebook-show/notebook-show.component';
@@ -46,7 +47,7 @@ import { StatusEmitter } from './status-bar/status';
     StatusBarComponent
   ],
 //  providers: [NoteService, DataService],
-  providers: [DataService, StatusEmitter],
+  providers: [DataService, StatusEmitter, SettingsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

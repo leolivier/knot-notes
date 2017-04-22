@@ -5,9 +5,10 @@ import { Location } from '@angular/common';
 import { TreeComponent, TreeNode, TREE_ACTIONS, KEYS, IActionMapping } from 'angular-tree-component';
 import { Notebook } from '../../notebook/notebook';
 import { Note } from '../../note';
-import { DataService } from '../../services/data.service';
 import { NotebookShowComponent } from '../notebook-show/notebook-show.component';
+import { DataService } from '../../services/data.service';
 import { StatusEmitter } from '../../status-bar/status';
+import { SettingsService } from '../../services/settings.service';
 
 const actionMapping: IActionMapping = {
   mouse: {
@@ -55,6 +56,7 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private location: Location,
     private noteService: DataService,
+    private settingsService: SettingsService,
     private alerter: StatusEmitter) {
     // creates a pseudo tree (or else the TreeComponent won't update)
     this.initRoot(new Notebook({ name: '/' }));

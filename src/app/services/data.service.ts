@@ -1,26 +1,16 @@
-import { Injectable, NgZone } from '@angular/core';
-import { Http, Headers, RequestOptions } from '@angular/http';
-import { Observable } from 'rxjs/Observable';
-
-// import 'rxjs/Rx';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/toPromise';
+import { Injectable } from '@angular/core';
 
 import { Note } from '../note';
 import { Notebook } from '../notebook/notebook';
-import { Settings, knot_notes_dbname, RemoteDBSettings } from '../admin/settings';
 import { StatusEmitter } from '../status-bar/status';
-
-// import { PouchDB } from 'pouchdb';
-//const PouchDB = require('pouchdb');
-
+import { SettingsService } from '../services/settings.service';
 import * as PouchDB from 'pouchdb';  
 import * as PouchDBFind from 'pouchdb-find';
+import { Settings, knot_notes_dbname } from '../admin/settings';
 
 @Injectable()
 export class DataService {
 
-  private settings: Settings;
   private db: any;
   private remote: string;
 
@@ -28,18 +18,18 @@ export class DataService {
   notes: Note[];
 
   constructor(
-    private _http: Http,
-    private alerter: StatusEmitter) {
+    private settingsService: SettingsService,
+    private alerter: StatusEmitter
+    ) {
 
     PouchDB.plugin(PouchDBFind);
     // create/open local database
     this.db = new PouchDB(knot_notes_dbname);
-  //  PouchDB.plugin(require('pouchdb-find'));
     window['PouchDB'] = PouchDB; // for debugging purpose
 
-    this.loadSettings()
-      .then(() => this.trySyncToRemote())
-      .catch((err) => this.handleError(err));
+    this.settingsService.loadSettings()
+      .then(settings => this.trySyncToRemote(settings))
+      .catch(err => this.handleError(err));
 
     this.db.setMaxListeners(30);
     // set up changes callback
@@ -56,11 +46,11 @@ export class DataService {
     if (reject) reject(error.message || error);
   }
 
-  trySyncToRemote() {
+  trySyncToRemote(settings: Settings) {
     const that = this;
-    if (this.settings && this.settings.useRemoteDB) {
+    if (settings.useRemoteDB) {
       // check remote settings
-      const rs = this.settings.remoteDBSettings;
+      const rs = settings.remoteDBSettings;
       if (!rs || !rs.baseUrl || !rs.username || !rs.password) { return; }
       this.remote = rs.baseUrl + '/' + knot_notes_dbname;
       // remote db options
@@ -69,8 +59,8 @@ export class DataService {
         retry: true,
         continuous: true,
         auth: {
-          username:  this.settings.remoteDBSettings.username,
-          password: this.settings.remoteDBSettings.password
+          username: settings.remoteDBSettings.username,
+          password: settings.remoteDBSettings.password
         }
       };
 
@@ -88,48 +78,11 @@ export class DataService {
     }
   }
 
-  loadSettings(force = false): Promise<Settings> {
-    if (this.settings && !force) {
-      return new Promise (resolve => resolve(this.settings));
-    }
-    const that = this;
-    return new Promise((resolve, reject) => {
-      that.db.get('settings').then(doc => {
-        that.settings = doc as Settings;
-        if (!that.settings.remoteDBSettings) { that.settings.remoteDBSettings = new RemoteDBSettings(); }
-        resolve(that.settings);
-      }).catch (err => {
-        if (err.name === 'not_found') {
-          that.settings = new Settings(); // default empty settings
-        } else {
-          that.handleError(err, reject);
-        }
-      });
-    });
-  }
-
-  saveSettings(settings?: Settings): Promise<Settings> {
-    const that = this;
-    if (settings) { that.settings = settings; }
-    const o = JSON.parse(JSON.stringify(that.settings));
-    return new Promise((resolve, reject) => {
-      that.db.put(o).then(response => {
-        if (response && response.ok) {
-        // be sure to refresh rev number
-          that.settings.rev = response.rev;
-          resolve(that.settings);
-          that.trySyncToRemote();
-        }
-      }).catch(error => that.handleError(error, reject))
-    });
+  stopSyncing() {
+// TODO: implement stopSyncing
   }
 
   handleChange(change) {
-    if (change.id === 'settings') {
-      this.settings = (change.deleted ? /* reset settings */ new Settings() : change.doc as Settings);
-      return;
-    }
-
     if (this.rootNotebook && this.rootNotebook.id === change.id) {
       if (change.deleted) {
         this.alerter.error('root notebook deleted!!!');

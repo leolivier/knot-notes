@@ -1,0 +1,167 @@
+@mixin skin(
+   $skin,
+   $icon_color,
+   $title_color,
+   $subtitle_color,
+   $dark_color,
+   $light_color,
+   $dark_color_sel,
+   $light_color_sel,
+   $dark_grey,
+   //$active_color,
+   $very_light_color,
+   $error_msg_color,
+   $error_msg_bgcolor,
+   $warning_msg_color,
+   $warning_msg_bgcolor,
+   $info_msg_color,
+   $info_msg_bgcolor
+)  {
+
+@debug $title_color saturation($title_color) (saturation($title_color) + 50)%100 lightness($title_color) (lightness($title_color) + 50)%100;
+
+$header_bg: hsl(hue($title_color), saturation($title_color), (lightness($title_color)+50%)%100);
+  .#{$skin}-header {
+    background-color: $light_color;
+//    background-color: complement($title_color);
+    .icon {
+      background-image: url(/assets/images/knot-note-#{$icon_color}-48x48.png);
+      background-repeat: no-repeat;
+      background-position: 3px -4px;
+    }
+  
+    .title {
+      color: $dark_color;
+    }
+
+    .menu-wrapper {
+      padding: 5px;
+      .menu-dropdown, .menu-button {
+        color: $dark-color;
+        background-color: $light_color;
+      }
+      .menu-button:hover {
+        color: $light-color;
+        background-color: $dark_color;      
+      } 
+     	.menu-item:hover {
+        color: $light-color;
+        background-color: $dark_color;      
+		  }
+    }
+  }
+  
+  .#{$skin}-h2, .#{$skin}-h3 {
+    color: $subtitle_color;
+  }
+  .#{$skin}-defaultcolor {
+      color: $dark_grey;
+  }
+  .#{$skin}-button {
+      background-color: $light_color;
+      border: 1px solid $dark_color;
+      color: $dark_color;
+      &:hover { 
+       	background-color: $very_light_color;
+        color: $dark_color_sel;
+      }
+     &:disabled {
+      	background-color: $light_color;
+  	    color: $dark_grey;
+     }
+  }
+  .#{$skin}-items {
+    li {
+          background-color: $very_light_color;
+          border-color: $dark_color;
+    }
+    &:hover {
+      color: $dark_color;
+      background-color: $light_color_sel;
+    }
+
+    .selected {
+      background-color: $light_color_sel; 
+      color: $light_color;
+    
+	    &:hover {
+  		  background-color: $light_color_sel;
+	    }
+    }
+    .badge {
+       background-color: $dark_color;
+       color: $very_light_color;
+    }
+    .selected-item {
+       background-color: $dark_color_sel;
+    }
+  }
+  .#{$skin}-module, .#{$skin}-settings * {
+     color: $dark_color; 
+     background-color: $light_color;
+     border-color: $dark_color;
+     /* overrides items color in module */
+    .items li { color:$dark_color; }
+    input { color: $dark_color; }
+
+  }
+  .#{$skin}-tree-wrapper {
+    .node-content-wrapper {
+       color: $dark_color;
+       // background-color: $very_light_color;
+    
+       &:hover { 
+         color: $dark_color; 
+       }
+  	   &::before {
+	       border-bottom: 1px solid $dark_color;
+	       border-left: 1px solid $dark_color;
+       }
+    }
+    .tree-children::after {
+      border-left: 1px solid $dark_color;
+    }
+    tree-node:last-child > .tree-node > .tree-children::after {
+         border-left: none;
+    }
+    .tree-node-focused > .node-wrapper > .node-content-wrapper {
+      background-color: $light_color_sel !important;   
+      color: $dark_color !important;
+    } 
+    .tree-node-active > .node-wrapper > .node-content-wrapper {
+      background-color: $dark_color_sel !important;
+    }
+  }
+  .#{$skin}-note-editor-container {
+    	border: solid 1px $dark_color;
+     	header {
+    	  background-color: $dark_color;
+	      color: $light_color;
+      }
+    	.note-editor-wrapper {
+    		.note-editor-placeholder {
+			    color: $dark_grey;
+        }
+      }
+    	.title-editor {
+		    color: $very_light_color;
+	    }
+   }
+   .#{$skin}-notebook-title {
+      background-color: $very_light_color;
+      color: $dark_color; 
+   }
+  .#{$skin}-info-status {
+    color: $info_msg_color;
+    background-color: $info_msg_bgcolor;
+  }
+  .#{$skin}-warning-status {
+    color: $warning_msg_color;
+    background-color: $warning_msg_bgcolor;
+  }
+  .#{$skin}-error-status {
+    color: $error_msg_color;
+    background-color: $error_msg_bgcolor;
+  }
+}
+

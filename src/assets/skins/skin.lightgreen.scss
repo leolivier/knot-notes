@@ -1,0 +1,23 @@
+@import "skin";
+@include skin(
+    $skin: 'lightgreen',
+    $icon_color: green,
+    $title_color: #5A8,
+    $subtitle_color: #444,
+    $dark_color: #60BB7D,
+    $light_color: #f0f4f3,
+    $dark_color_sel: #90dfbb,
+    $light_color_sel: #cfdcd8,
+    $dark_grey: #888,
+    //$active_color: #039be5,
+    $very_light_color: #fff,
+
+    $error_msg_color: #cc0000,
+    $error_msg_bgcolor: #ff6666,
+    $warning_msg_color: #ff3300,
+    $warning_msg_bgcolor: orange,
+    $info_msg_color: #60BB7D,
+    $info_msg_bgcolor: #f0f4f3
+);
+
+

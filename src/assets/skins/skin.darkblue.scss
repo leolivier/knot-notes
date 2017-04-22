@@ -1,0 +1,20 @@
+@import "skin";
+@include skin(
+    $skin: 'darkblue',
+    $icon_color: blue,
+    $title_color: #369,
+    $subtitle_color: #444,
+    $light_color: #607D8B,
+    $dark_color: #f0f3f4,
+    $light_color_sel: #90bbdf,
+    $dark_color_sel: #cfd8dc,
+    $dark_grey: #eee,
+    //$active_color: #039be5,
+    $very_light_color: #111,
+    $error_msg_color: #cc0000,
+    $error_msg_bgcolor: #ff6666,
+    $warning_msg_color: #ff3300,
+    $warning_msg_bgcolor: orange,
+    $info_msg_color: #607D8B,
+    $info_msg_bgcolor: #f0f3f4
+);

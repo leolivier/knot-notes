@@ -1,6 +1,8 @@
 import { Crypto } from './crypto';
 
 export const knot_notes_dbname = 'knot-notes';
+export const settings_dbname = 'knot-notes-settings';
+export const skins = ['lightblue', 'darkblue', 'lightgreen', 'darkgreen'];
 
 export class RemoteDBSettings {
   name = knot_notes_dbname;
@@ -20,4 +22,5 @@ export class Settings {
   crypt = false;
   cryptoKey: JsonWebKey;
   // passphrase: string;
+  skin = 'lightblue';
 }

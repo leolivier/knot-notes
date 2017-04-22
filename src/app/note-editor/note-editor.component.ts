@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit, EventEmitter, Input, Outpu
 import { Note } from '../note';
 import { StatusEmitter } from '../status-bar/status';
 
-// import { NoteService } from '../note.service';
+import { SettingsService } from '../services/settings.service';
 import { DataService } from '../services/data.service';
 import { Subject } from 'rxjs/Subject';
 // Observable operators
@@ -36,6 +36,7 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 //  constructor(private noteService: NoteService) {}
   constructor(
     private noteService: DataService,
+    private settingsService: SettingsService,
     private alerter: StatusEmitter) {}
 
   ngOnInit(): void {
@@ -77,12 +78,12 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
       setup: editor => this.setupNoteEditor(editor),
 //      init_instance_callback: editor => this.initEditor(editor),
     });
-    this.noteEditor.setContent(this.note.content);
+    this.noteEditor.setContent(this.note.content||'');
   }
 
   ngOnDestroy() {
-    tinymce.remove(this.noteEditor);
     this.noteEditor.setContent('');
+    tinymce.remove(this.noteEditor);
   }
 
   setupTitleEditor(editor) {

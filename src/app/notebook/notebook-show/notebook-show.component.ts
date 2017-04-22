@@ -4,6 +4,7 @@ import { Note, NoteType } from '../../note';
 import { Notebook } from '../../notebook/notebook';
 import { DataService } from '../../services/data.service';
 import { StatusEmitter } from '../../status-bar/status';
+import { SettingsService } from '../../services/settings.service';
 
 @Component({
   moduleId: module.id,
@@ -33,6 +34,7 @@ export class NotebookShowComponent {
 
   constructor(
     private noteService: DataService,
+    private settingsService: SettingsService,
     private alerter: StatusEmitter) {}
 
   name(): string {

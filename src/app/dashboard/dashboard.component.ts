@@ -8,6 +8,7 @@ import { Notebook } from '../notebook/notebook';
 import { NoteEditorComponent } from '../note-editor/note-editor.component';
 import { NotebookShowComponent } from '../notebook/notebook-show/notebook-show.component';
 import { DataService } from '../services/data.service';
+import { SettingsService } from '../services/settings.service';
 
 @Component({
   moduleId: module.id,
@@ -30,7 +31,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    //    private noteService: NoteService) {}
+    private settingsService: SettingsService,
     private noteService: DataService) { }
 
   ngOnInit(): void {

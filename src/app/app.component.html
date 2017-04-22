@@ -1,5 +1,6 @@
-<header>
-	<img src="assets/images/knot-note-48x48.png" class="icon">
+<header [ngClass]="settingsService.skin('header')">
+	<!--img src="assets/images/knot-note-48x48.png" class="icon"-->
+	<div class="icon"></div>
 	<span class="title">{{title}}</span>
 	<app-menu [values]="menuValues" [position]="'right'" (onSelect)="action($event)"></app-menu>
 </header>

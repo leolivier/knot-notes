@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Settings, RemoteDBSettings } from '../settings';
+import { Settings, RemoteDBSettings, skins } from '../settings';
 import { Crypto } from '../crypto';
 import { DataService } from '../../services/data.service';
 import { StatusEmitter } from '../../status-bar/status';
+import { SettingsService } from '../../services/settings.service';
 
 @Component({
   moduleId: module.id,
@@ -14,21 +15,33 @@ export class SettingsComponent implements OnInit {
   settings = new Settings;
   showKey: string;
   crypto: Crypto;
+  setSkin($event) { 
+    this.settings.skin = $event.target.value; 
+  }
+  skins(): string[] {
+    return skins;
+  }
+  skin(): string { return this.settings.skin; }
 
   get useRemoteDB(): boolean { return this.settings.useRemoteDB; }
   set useRemoteDB(val: boolean) {
+    if (val && !this.settings.useRemoteDB) { // start using remote db
+      if (!this.settings.remoteDBSettings) { this.settings.remoteDBSettings = new RemoteDBSettings(); }
+    } else if (!val && this.settings.useRemoteDB) { // stop using remote db
+      this.dataService.stopSyncing();
+    }
     this.settings.useRemoteDB = val;
-    if (val && !this.settings.remoteDBSettings) { this.settings.remoteDBSettings = new RemoteDBSettings(); }
   }
 
   constructor(
+    private settingsService: SettingsService,
     private dataService: DataService,
     private alerter: StatusEmitter) {
       this.crypto = new Crypto(dataService, alerter);
   }
 
   ngOnInit() {
-    this.dataService.loadSettings()
+    this.settingsService.loadSettings()
       .then(settings => {
         this.settings = settings;
         if (settings.crypt) { this.crypto.initCrypto(this.settings); }
@@ -40,7 +53,7 @@ export class SettingsComponent implements OnInit {
   }
 
   save() {
-    this.dataService.saveSettings(this.settings);
+    this.settingsService.saveSettings(this.settings);
   }
 
   showEncryptionKey() {

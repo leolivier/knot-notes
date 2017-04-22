@@ -1,13 +1,11 @@
-@import 'skin.scss'; 
+@import 'assets/skins'; 
 
 // Master Styles
-h1, .title {
-  color: $title_color;
+h1, .title {   // + skin-title
   font-family: Arial, Helvetica, sans-serif;
   font-size: 2.5em;
 }
-h2, h3 {
-  color: $subtitle_color;
+h2, h3 {  // +skin-h2 or h3
   font-family: Arial, Helvetica, sans-serif;
   font-weight: lighter;
 }
@@ -20,8 +18,7 @@ h4 {
 body {
   margin: 2em;
 }
-body, input[text], button {
-  color: $dark_grey;
+body, input[text], button {   // + skin-defaultcolor
   font-family: Cambria, Georgia;
 }
 a {
@@ -43,23 +40,14 @@ a {
 }
 
 /* buttons */
-button {
+button { // + skin-button
   font-family: Arial;
-  background-color: $light_color;
   border: none;
   padding: 0.2em 0.4em;
   border-radius: 4px;
   cursor: pointer;
   cursor: hand;
-
-  :hover {
-  	background-color: $light_color_sel;
-  }
-  :disabled {
-  	background-color: $light_color;
-  	color: $dark_grey;
-  	cursor: auto;
-  }
+  :disabled { cursor: auto; }
 }
 
 /* Navigation link styles 
@@ -87,14 +75,15 @@ nav {
 }
 */
 /* icons */
-.icon {
+.icon { // + skin-icon
   width: 48px;
   height: 48px;
   vertical-align: bottom;
+  display: inline-block;
 }
 
 /* items class used in lists */
-.items {
+.items {  // + skin-items
   margin: 0 0 2em 0;
   list-style-type: none;
   padding: 0;
@@ -104,12 +93,11 @@ nav {
     cursor: pointer;
     position: relative;
     left: 0;
-    background-color: $very_light_color;
     margin: .5em;
     padding: /*.3em 0;*/ 0;
     height: 1.6em;
     border-radius: 4px;
-    border: 1px solid $dark_color;
+    border: 1px solid;
     display: flex;
     flex-flow: row;
     
@@ -122,22 +110,9 @@ nav {
     }
 
     &:hover {
-      color: $dark_color;
-      background-color: $light_color_sel;
       left: .1em;
       & button { visibility: visible !important; }
     }
-        
-    .selected {
-      background-color: $light_color_sel; //#CFD8DC;
-      color: $light_color;
-    
-	  &:hover {
-  		background-color: $light_color_sel; //#BBD8DC;
-	  }
-    }
-    
-
   }
 
   .text {
@@ -148,8 +123,6 @@ nav {
   .badge {
     display: inline-block;
     // font-size: small;
-    background-color: $dark_color;
-    color: $very_light_color;
     padding: 4px; // 0.8em 0.7em 0 0.7em;
     padding-right: 4px !important;
     //line-height: 1em;
@@ -167,7 +140,6 @@ nav {
   	text-align: left;
   }
   .selected-item {
- 	background-color: $dark_color_sel;
     button { visibility: visible; }
   }
   
@@ -213,18 +185,14 @@ nav {
 }
 
 /* modules */
-.module {
+.module {  // + skin-module
   padding: 0.5em;
   text-align: center;
-  color: $dark_color; 
  /* min-width: 480px;*/
-  background-color: $light_color;
   border-radius: 4px;
-  border: 2px solid $dark_color
+  border: 2px solid;
 
   :hover { cursor: pointer; }
-/* overrides items color in module */
-  .items li { color:$dark_color; }
 }
 
 .full-height {
@@ -249,14 +217,14 @@ nav {
   width: 300px;
 }
 
-.tree-wrapper {
+.tree-wrapper { // + skin-tree-wrapper
   height: 10em;
 
   .tree-children {
     position: relative;
   }
 
-  .node-content-wrapper {
+  .node-content-wrapper {  
     display: flex;
     flex-wrap: wrap;
     text-align: left;
@@ -266,20 +234,15 @@ nav {
     border-radius: 4px;
     flex-grow: 1;
     position: relative;
-    color: $dark_color;
-    //background-color: $very_light_color;
     margin-right: 0.2em;
   
     &:hover { 
-      color: $dark_color; 
       left: .1em; 
     }
 
 	&::before {
 	  content: "";
 	  position: absolute;
-	  border-bottom: 1px solid lightgrey;
-	  border-left: 1px solid lightgrey;
 	  height: 28px;
 	  top: -15px;
 	  width: 20px;
@@ -291,7 +254,6 @@ nav {
   .tree-children::after {
     content: "";
     position: absolute;
-    border-left: 1px solid lightgrey;
     height: 100%;
     top: -11px;
     left: -15px;
@@ -301,13 +263,7 @@ nav {
     width: 25px;
   }
 
-  .tree-node-focused > .node-wrapper > .node-content-wrapper {
-    background-color: $light_color_sel !important;   
-    color: $dark_color !important;
-  } 
-
   .tree-node-active > .node-wrapper > .node-content-wrapper {
-    background-color: $dark_color_sel !important;
     border-radius: 4px;
   }
 
@@ -318,7 +274,8 @@ nav {
     visibility: visible;
   }
 
-  treenode:last-child > .tree-node > .tree-children::after {
+  treenode:last-child > .tree-node > .tree-children::after,
+  .tree-node:last-child > .tree-children::after {
     border-left: none;
   }
 

@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Status } from './status-bar/status';
+import { SettingsService } from './services/settings.service';
 
 @Component({
   moduleId: module.id,
@@ -17,7 +18,10 @@ export class AppComponent {
 
   status: Status;
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private settingsService: SettingsService,
+  ) { }
 
   action(act: string) {
     this.router.navigate([act]);

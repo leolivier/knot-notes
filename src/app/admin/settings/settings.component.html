@@ -1,4 +1,4 @@
-<div class="settings">
+<div [ngClass]="settingsService.skin('settings')">
 	<fieldset [disabled]="!useRemoteDB">
 		<legend i18n>Remote CouchDB server 
 			<input type="checkbox" 
@@ -9,26 +9,32 @@
 		<input type="text" 
 			i18n-placeholder placeholder="https://<my-host>.<my-domain>" 
 			i18n-title title="cloudant, couchdb, couchbase remote url\nDon't put the database name in the url" 
-			[(ngModel)]="settings.remoteDBSettings.baseUrl"><br/>
+			[(ngModel)]="settings.remoteDBSettings.baseUrl" size="50"><br/>
 		<label i18n>Database user id: </label><br/>
 		<input type="text" 
 			i18n-placeholder placeholder="john-doe" 
-			[(ngModel)]="settings.remoteDBSettings.username" 
+			[(ngModel)]="settings.remoteDBSettings.username" size="50"
 			i18n-title title="the user id to connect to the database"><br/>
 		<label i18n>Database password: </label><br/>
 		<input type="password" 
-			i18n-placeholder placeholder="xXxoOo" 
+			i18n-placeholder placeholder="xXxoOo" size="50"
 			[(ngModel)]="settings.remoteDBSettings.password" 
 			i18n-title title="the user password to connect to the database"><br/>
 		<label i18n>Encrypt data:</label>
 		<input type="checkbox" 
 			[(ngModel)]="settings.crypt" (click)="checkCrypto()"
 			i18n-title title="If you check this box, the content of the database will encrypted. Not yet implemented!">
+        <button i18n (mousedown)="showEncryptionKey()" (mouseup)="showKey=undefined" [ngClass]="settingsService.skin('button')">Show encryption key</button>
 		<label *ngIf="showKey" i18n i18n-title title="The computed encryption key">Encryption key:{{showKey}}</label>
 	</fieldset>
-	<button (click)="save()" i18n 
+	<div class="skinset">
+		<label i18n>Skin</label>
+		<select (change)="setSkin($event)">
+			<option *ngFor="let s of skins()" [selected]="s == skin()">{{s}}</option>
+		</select>
+	</div>
+	<button (click)="save()" i18n [ngClass]="settingsService.skin('button')"
 		i18n-title title="Save the settings in the local database. If the remote database is correctly configured, the sync begins...">
 		Save settings
 	</button>
-	<button i18n (mousedown)="showEncryptionKey()" (mouseup)="showKey=undefined">Show encryption key</button>
 </div>
