@@ -29,6 +29,11 @@ export class SettingsService {
   skin(clazz: string) {
     return [clazz, this.settings.skin + '-' + clazz]; 
   }
+  skins(clazzes: string[]) {
+    let res = [];
+    clazzes.forEach(clazz => res.push(clazz, this.settings.skin + '-' + clazz));
+    return res; 
+  }
 
   loadSettings(force = false): Promise<Settings> {
     if (this.settings && !force) {

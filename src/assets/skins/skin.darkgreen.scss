@@ -2,15 +2,12 @@
 @include skin(
     $skin: 'darkgreen',
     $icon_color: green,
-    $title_color: #5A8,
-    $subtitle_color: #444,
     $light_color: #60BB7D,
     $dark_color: #f0f4f3,
     $light_color_sel: #90dfbb,
     $dark_color_sel: #cfdcd8,
-    $dark_grey: #eee,
-    //$active_color: #039be5,
-    $very_light_color: #111,
+    $very_dark_color: #aea,
+    $very_light_color: #265936,
 
     $error_msg_bgcolor: #cc0000,
     $error_msg_color: #ff6666,

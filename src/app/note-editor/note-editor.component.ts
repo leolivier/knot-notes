@@ -54,8 +54,9 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
       toolbar: 'undo redo',
       menubar: false,
       setup: editor => this.setupTitleEditor(editor),
+      init_instance_callback: editor => editor.setContent(this.note.title)
     });
-    this.titleEditor.setContent(this.note.title);
+//    this.titleEditor.setContent(this.note.title);
 
     // init the tinyMCE editor
     tinymce.init({
@@ -76,9 +77,9 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
       menubar: false,
       inline: true,
       setup: editor => this.setupNoteEditor(editor),
-//      init_instance_callback: editor => this.initEditor(editor),
+      init_instance_callback: editor => editor.setContent(this.note.content||'')
     });
-    this.noteEditor.setContent(this.note.content||'');
+//    this.noteEditor.setContent(this.note.content||'');
   }
 
   ngOnDestroy() {
@@ -108,9 +109,9 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   save(content?: string, title?: string): void {
-    if (content) { this.note.content = content; }
-    if (title) { this.note.title = title; }
     if (content || title) {
+    if (content) { this.note.content = content; }
+      if (title) { this.note.title = title; }
       this.noteService.saveNote(this.note)
         .catch(reason => this.alerter.error ('save error:' + JSON.stringify(reason)));
     }

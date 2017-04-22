@@ -1,14 +1,11 @@
 @mixin skin(
    $skin,
    $icon_color,
-   $title_color,
-   $subtitle_color,
    $dark_color,
    $light_color,
    $dark_color_sel,
    $light_color_sel,
-   $dark_grey,
-   //$active_color,
+   $very_dark_color,
    $very_light_color,
    $error_msg_color,
    $error_msg_bgcolor,
@@ -18,12 +15,10 @@
    $info_msg_bgcolor
 )  {
 
-@debug $title_color saturation($title_color) (saturation($title_color) + 50)%100 lightness($title_color) (lightness($title_color) + 50)%100;
+//@debug $title_color saturation($title_color) (saturation($title_color) + 50)%100 lightness($title_color) (lightness($title_color) + 50)%100;
+//$header_bg: hsl(hue($title_color), saturation($title_color), (lightness($title_color)+50%)%100);
 
-$header_bg: hsl(hue($title_color), saturation($title_color), (lightness($title_color)+50%)%100);
   .#{$skin}-header {
-    background-color: $light_color;
-//    background-color: complement($title_color);
     .icon {
       background-image: url(/assets/images/knot-note-#{$icon_color}-48x48.png);
       background-repeat: no-repeat;
@@ -40,7 +35,7 @@ $header_bg: hsl(hue($title_color), saturation($title_color), (lightness($title_c
         color: $dark-color;
         background-color: $light_color;
       }
-      .menu-button:hover {
+      .menu-button:hover, .opened-menu-button {
         color: $light-color;
         background-color: $dark_color;      
       } 
@@ -50,12 +45,13 @@ $header_bg: hsl(hue($title_color), saturation($title_color), (lightness($title_c
 		  }
     }
   }
-  
+//@debug $dark_color   transparentize($dark_color, 0.25) fade-out($dark_color, 0.25);
   .#{$skin}-h2, .#{$skin}-h3 {
-    color: $subtitle_color;
+    color: transparentize($dark_color, 0.25); // fade-out($dark_color, 0.25);
   }
+
   .#{$skin}-defaultcolor {
-      color: $dark_grey;
+      color: $very_dark_color;
   }
   .#{$skin}-button {
       background-color: $light_color;
@@ -67,21 +63,21 @@ $header_bg: hsl(hue($title_color), saturation($title_color), (lightness($title_c
       }
      &:disabled {
       	background-color: $light_color;
-  	    color: $dark_grey;
+  	    color: $very_dark_color;
      }
   }
   .#{$skin}-items {
     li {
-          background-color: $very_light_color;
-          border-color: $dark_color;
-    }
-    &:hover {
-      color: $dark_color;
-      background-color: $light_color_sel;
+      background-color: $very_light_color;
+      border-color: $dark_color;
+      &:hover {
+        color: $dark_color;
+        background-color: $light_color_sel;
+      }
     }
 
-    .selected {
-      background-color: $light_color_sel; 
+    .selected-item {
+      background-color: $dark_color_sel;
       color: $light_color;
     
 	    &:hover {
@@ -92,27 +88,30 @@ $header_bg: hsl(hue($title_color), saturation($title_color), (lightness($title_c
        background-color: $dark_color;
        color: $very_light_color;
     }
-    .selected-item {
-       background-color: $dark_color_sel;
+    input { 
+      color: $dark_color; 
+      background-color: $light_color; 
     }
   }
-  .#{$skin}-module, .#{$skin}-settings * {
+  .#{$skin}-module, .#{$skin}-settings *, .#{$skin}-header {
      color: $dark_color; 
      background-color: $light_color;
      border-color: $dark_color;
-     /* overrides items color in module */
-    .items li { color:$dark_color; }
     input { color: $dark_color; }
-
   }
+
+     /* overrides items color in module */
+  .#{$skin}-module .items li { color:$dark_color; }
+
   .#{$skin}-tree-wrapper {
     .node-content-wrapper {
        color: $dark_color;
        // background-color: $very_light_color;
     
        &:hover { 
-         color: $dark_color; 
-       }
+         // color: $dark_color; 
+  		   background-color: $light_color_sel;
+      }
   	   &::before {
 	       border-bottom: 1px solid $dark_color;
 	       border-left: 1px solid $dark_color;
@@ -121,7 +120,7 @@ $header_bg: hsl(hue($title_color), saturation($title_color), (lightness($title_c
     .tree-children::after {
       border-left: 1px solid $dark_color;
     }
-    tree-node:last-child > .tree-node > .tree-children::after {
+    tree-node:last-child > .tree-node > .tree-children::after {  // does not work :/
          border-left: none;
     }
     .tree-node-focused > .node-wrapper > .node-content-wrapper {
@@ -133,19 +132,24 @@ $header_bg: hsl(hue($title_color), saturation($title_color), (lightness($title_c
     }
   }
   .#{$skin}-note-editor-container {
-    	border: solid 1px $dark_color;
-     	header {
-    	  background-color: $dark_color;
-	      color: $light_color;
-      }
-    	.note-editor-wrapper {
-    		.note-editor-placeholder {
-			    color: $dark_grey;
+    	border: solid 2px $dark_color;
+      background-color: $very_light_color;
+     	header {  // always light on dark
+    	  @if lightness($dark_color) > lightness($light_color) {
+          background-color: $light_color;
+          color: $dark_color;
+        } @else {
+          color: $light_color;
+          background-color: $dark_color;
         }
       }
-    	.title-editor {
-		    color: $very_light_color;
-	    }
+
+    	.note-editor-wrapper {
+    		.note-editor-placeholder {
+			    color: $dark_color;
+        }
+        color: $dark_color;
+      }
    }
    .#{$skin}-notebook-title {
       background-color: $very_light_color;
