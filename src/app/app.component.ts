@@ -29,5 +29,7 @@ export class AppComponent {
   setStatus($event) {
     this.status = $event;
   }
+
+  skin() { return this.settingsService.skin(); }
 }
 

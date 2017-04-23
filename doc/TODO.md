@@ -1,8 +1,6 @@
 # TODO List
 
 ## Enhancements requests
-* Syncing with a remote is not clearly shown
-* Better management of errors for users
 * Internationalization
 * Manage deep links correctly so that url containing note ids can work and show the note  
 
@@ -16,7 +14,6 @@
 ## Bugs
 * Probably don't work on IE (not tested)
 * css need some fix in Firefox
-* Base url in index.html works good in ng serve if set to '/' or good in prod if set to '/'+document.location but no way to find something compatible between the 2 environments
  
 ## Ideas
 * Mix list of notes inside the notebook tree

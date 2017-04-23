@@ -14,8 +14,9 @@ It is written with the help of
 Don't hesitate to create features requests or issues on [GitHub](https://github.com/leolivier/knot-note/issues).
 
 See [TODO.md](doc/TODO.md) to check what's in the pipe currently.
+See [RELEASE.md](doc/RELEASE.md) to see what has been delivered 
 
-__WARNING: This is an alpha release!__
+__WARNING: This is still an alpha release!__
 ------------
 
 ##Installing 
@@ -26,7 +27,7 @@ __WARNING: This is an alpha release!__
 
 * You must have an http server installed (Apache, NGinx, ...)
 * Create a directory named knot-notes in the root of your http server 
-* Download the [1.0.alpha-1 release](https://github.com/leolivier/knot-note/raw/master/knot-notes-1.0.alpha-1.zip) zip file, 
+* Download the [1.0.alpha-2 release](https://github.com/leolivier/knot-note/raw/master/knot-notes-1.0.alpha-2.zip) zip file, 
 unzip it in the directory above.
 * If necessary, manage the server configuration so that the new directory can be accessed
 * That's it!
