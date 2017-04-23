@@ -1,14 +1,14 @@
-<div [ngClass]="settingsService.skin('notebook-title')">
+<div class="notebook-title">
    <span>{{name()}}</span>
    <button *ngIf="currentNotebook" (click)="newNote()" i18n-title title="Create note">
    	<i class="fa fa-plus-square"></i>
    </button>
 </div>
-<ul [ngClass]="settingsService.skin('items')">
+<ul class="items">
 	<li *ngFor="let n of notes" (click)="selectNote(n)" [class.selected-item]="n==selectedNote">
 	    <i class="badge fa fa-sticky-note-o"></i>
 	    <span *ngIf="!isEditable(n)" (dblclick)="startEdition(n)" 
-	    	i18n-title title="doucle clic to edit title. drag&drop notes to change their orders"
+	    	i18n-title title="double clic to edit title. drag&drop notes to change their orders"
 	    	draggable="true" (dragstart)="dragNote($event, n)"
 	    	(drop)="dropNote($event, n)" (dragover)="allowDropNote($event)">
 	    	{{ n.title }}

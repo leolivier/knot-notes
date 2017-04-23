@@ -1,17 +1,13 @@
 <div class="grid grid-pad">
   <div class="col-1">
-    <div [ngClass]="settingsService.skin('module')">
-    	<app-notebook-tree (onSelectedNotebook)="selectedNotebook=$event" (onChangeStatus)="forwardStatusChange($event)">
-    	</app-notebook-tree>
+    <div class="module">
+    	<app-notebook-tree (onSelectedNotebook)="selectedNotebook=$event; selectedNote=null"></app-notebook-tree>
     </div>
-    <div [ngClass]="settingsService.skin('module')">
-    	<app-notebook-show (onSelectedNote)="selectedNote=$event; editMode=false" 
-    		[notebook]="selectedNotebook"  (onChangeStatus)="forwardStatusChange($event)">
-    	</app-notebook-show>
+    <div class="module">
+    	<app-notebook-show (onSelectedNote)="selectedNote=$event" [notebook]="selectedNotebook"></app-notebook-show>
     </div>
   </div>
   <div class="col-2">
-      <app-note-editor *ngIf="selectedNote" [note]="selectedNote"  (onChangeStatus)="forwardStatusChange($event)">
-      </app-note-editor>
+      <app-note-editor *ngIf="selectedNote" [note]="selectedNote"></app-note-editor>
   </div>
 </div>

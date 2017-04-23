@@ -1,4 +1,4 @@
-<div *ngIf="note" [ngClass]="settingsService.skin('note-editor-container')">
+<div *ngIf="note" class="note-editor-container">
 	<header><h2 id="title_editor" class="editable title-editor">{{note.title}}</h2></header>
 	<div class="note-editor-wrapper">
 		<label *ngIf="!note.content" class="note-editor-placeholder" i18n>Click in text, and start typing to edit, please...</label>

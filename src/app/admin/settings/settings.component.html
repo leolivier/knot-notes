@@ -1,4 +1,4 @@
-<div [ngClass]="settingsService.skin('settings')">
+<div class="settings">
 	<fieldset [disabled]="!useRemoteDB">
 		<legend i18n>Remote CouchDB server 
 			<input type="checkbox" 
@@ -24,7 +24,7 @@
 		<input type="checkbox" 
 			[(ngModel)]="settings.crypt" (click)="checkCrypto()"
 			i18n-title title="If you check this box, the content of the database will encrypted. Not yet implemented!">
-        <button i18n (mousedown)="showEncryptionKey()" (mouseup)="showKey=undefined" [ngClass]="settingsService.skin('button')">Show encryption key</button>
+        <button i18n (mousedown)="showEncryptionKey()" (mouseup)="showKey=undefined">Show encryption key</button>
 		<label *ngIf="showKey" i18n i18n-title title="The computed encryption key">Encryption key:{{showKey}}</label>
 	</fieldset>
 	<div class="skinset">
@@ -33,7 +33,7 @@
 			<option *ngFor="let s of skins()" [selected]="s == skin()">{{s}}</option>
 		</select>
 	</div>
-	<button (click)="save()" i18n [ngClass]="settingsService.skin('button')"
+	<button (click)="save()" i18n
 		i18n-title title="Save the settings in the local database. If the remote database is correctly configured, the sync begins...">
 		Save settings
 	</button>

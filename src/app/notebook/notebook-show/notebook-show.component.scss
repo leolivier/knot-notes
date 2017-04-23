@@ -3,4 +3,7 @@
 .notebook-title { // + skin-notebook-title
   margin: -6px 0px 0px -6px;
   border-radius: 4px;
+  button {
+    padding-right: 4px;
+  }
 }

@@ -1,7 +1,7 @@
 import { Crypto } from './crypto';
 
 export const knot_notes_dbname = 'knot-notes';
-export const settings_dbname = 'knot-notes-settings';
+export const settings_id = 'settings';
 export const skins = ['lightblue', 'darkblue', 'lightgreen', 'darkgreen'];
 
 export class RemoteDBSettings {
@@ -12,7 +12,7 @@ export class RemoteDBSettings {
 }
 
 export class Settings {
-  private _id = 'settings';
+  private _id = settings_id;
   private _rev: string;
   // setter for data.service only!
   set rev(rev: string) { this._rev = rev; }

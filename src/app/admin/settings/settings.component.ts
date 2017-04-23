@@ -25,7 +25,7 @@ export class SettingsComponent implements OnInit {
 
   get useRemoteDB(): boolean { return this.settings.useRemoteDB; }
   set useRemoteDB(val: boolean) {
-    if (val && !this.settings.useRemoteDB) { // start using remote db
+    if (val && !this.settings.useRemoteDB) { // start using remote db, the real sync starts when saving only
       if (!this.settings.remoteDBSettings) { this.settings.remoteDBSettings = new RemoteDBSettings(); }
     } else if (!val && this.settings.useRemoteDB) { // stop using remote db
       this.dataService.stopSyncing();
@@ -37,14 +37,14 @@ export class SettingsComponent implements OnInit {
     private settingsService: SettingsService,
     private dataService: DataService,
     private alerter: StatusEmitter) {
-      this.crypto = new Crypto(dataService, alerter);
+      this.crypto = new Crypto(settingsService, alerter);
   }
 
   ngOnInit() {
     this.settingsService.loadSettings()
       .then(settings => {
         this.settings = settings;
-        if (settings.crypt) { this.crypto.initCrypto(this.settings); }
+        this.checkCrypto();
     });
   }
 
@@ -54,6 +54,7 @@ export class SettingsComponent implements OnInit {
 
   save() {
     this.settingsService.saveSettings(this.settings);
+    if (this.settings.useRemoteDB) { this.dataService.trySyncToRemote(this.settings); }
   }
 
   showEncryptionKey() {

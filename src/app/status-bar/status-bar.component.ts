@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { StatusEmitter, Status } from '../status-bar/status';
-import { SettingsService } from '../services/settings.service';
+import { StatusEmitter, Status, StatusKind } from '../status-bar/status';
 
-const StatusClasses = [ 'error', 'warning', 'info']; // must match StatusKind
+const StatusClasses = [ 'error', 'warning', 'info', 'sync']; // must match StatusKind
 
 @Component({
   selector: 'app-status-bar',
@@ -11,19 +10,24 @@ const StatusClasses = [ 'error', 'warning', 'info']; // must match StatusKind
 })
 export class StatusBarComponent implements OnInit {
   status = new Status;
+  syncState = {message: 'None', kind: StatusKind.Sync} as Status;
 
-
-  constructor(
-    private alerter: StatusEmitter,
-    private settingsService: SettingsService,
-  ) {}
+  constructor(private alerter: StatusEmitter) {}
 
   ngOnInit() {
-    this.alerter.subscribe(status => this.status = status);
+    this.alerter.subscribe(status => this.setStatus(status));
   }
 
-  class(): string[] { 
-    return this.settingsService.skin(StatusClasses[this.status.kind] + '-status'); 
+  setStatus(status: Status) {
+    if (status.kind === StatusKind.Sync) {
+      this.syncState = status;
+    } else {
+      this.status = status;
+    }
+  }
+
+  class(): string { 
+    return StatusClasses[this.status.kind] + '-status'; 
   } 
 
 }

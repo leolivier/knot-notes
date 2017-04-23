@@ -1,7 +1,7 @@
 /**
  * Implementation of cryptography based on WebCryptoAPI, AES-GCM algorithm
  */
-import { DataService } from '../services/data.service';
+import { SettingsService } from '../services/settings.service';
 import { Settings } from './settings';
 import { StatusEmitter } from '../status-bar/status';
 
@@ -12,7 +12,7 @@ export class Crypto {
   key: CryptoKey;
 
   constructor (
-    private dataService: DataService,
+    private settingsService: SettingsService,
     private alerter: StatusEmitter) {}
 
   initCrypto(settings: Settings) {
@@ -25,7 +25,7 @@ export class Crypto {
           this.exportKey()
             .then(jswk => {
               settings.cryptoKey = jswk;
-              this.dataService.saveSettings(settings);
+              this.settingsService.saveSettings(settings);
             })
             .catch(err => this.handleError(err));
         },

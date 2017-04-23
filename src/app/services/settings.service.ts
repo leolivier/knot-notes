@@ -1,22 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Settings, settings_dbname, RemoteDBSettings } from '../admin/settings';
+import { Settings, settings_id, RemoteDBSettings } from '../admin/settings';
 import { StatusEmitter } from '../status-bar/status';
 import * as PouchDB from 'pouchdb';  
 import * as PouchDBFind from 'pouchdb-find';
 
 @Injectable()
 export class SettingsService {
-  settings = new Settings();
+  settings: Settings;
   private db: any;
 
-  constructor(private alerter: StatusEmitter) {
-    PouchDB.plugin(PouchDBFind);
-    // create/open local database
-    this.db = new PouchDB(settings_dbname);
-    window['PouchDB'] = PouchDB; // for debugging purpose
-    this.loadSettings(true);
-    this.db.setMaxListeners(30);
-  }
+  constructor(private alerter: StatusEmitter) {}
 
   private handleError(error: any, reject?) {
     this.alerter.error('An error occurred: ' + error);
@@ -26,22 +19,28 @@ export class SettingsService {
 
   useRemoteDB(): boolean { return this.settings.useRemoteDB; }
   remoteDBSettings(): RemoteDBSettings { return this.settings.remoteDBSettings; }
-  skin(clazz: string) {
-    return [clazz, this.settings.skin + '-' + clazz]; 
-  }
-  skins(clazzes: string[]) {
-    let res = [];
-    clazzes.forEach(clazz => res.push(clazz, this.settings.skin + '-' + clazz));
-    return res; 
+  skin(): string { 
+    if (this.settings) {
+      if (!this.settings.skin) {
+        this.settings.skin = 'lightblue';
+      }
+      return this.settings.skin+'-skin'
+    } else { return 'lightblue'; }
   }
 
-  loadSettings(force = false): Promise<Settings> {
-    if (this.settings && !force) {
+  loadSettings(db = null, force = false): Promise<Settings> {
+    if (!force && this.settings) {
       return Promise.resolve(this.settings);
+    }
+    if (db) {
+     // use provided local database (from data services)
+      this.db = db; // new PouchDB(settings_dbname);
+    } else if (!this.db) {
+      return Promise.reject('Cannot load settings: database not set');
     }
     const that = this;
     return new Promise((resolve, reject) => {
-      that.db.get('settings').then(doc => {
+      that.db.get(settings_id).then(doc => {
         that.settings = doc as Settings;
         if (!that.settings.remoteDBSettings) { that.settings.remoteDBSettings = new RemoteDBSettings(); }
         resolve(that.settings);
@@ -58,6 +57,7 @@ export class SettingsService {
   saveSettings(settings?: Settings): Promise<Settings> {
     const that = this;
     if (settings) { that.settings = settings; }
+    if (!that.settings.rev) { that.settings.rev = '0'; }
     const o = JSON.parse(JSON.stringify(that.settings));
     return new Promise((resolve, reject) => {
       that.db.put(o).then(response => {
@@ -68,5 +68,9 @@ export class SettingsService {
         }
       }).catch(error => that.handleError(error, reject))
     });
+  }
+
+  handleChange(change) {
+//    this.settings = change.doc as Settings;
   }
 }

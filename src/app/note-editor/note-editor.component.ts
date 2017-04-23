@@ -1,14 +1,14 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, EventEmitter, Input, Output } from '@angular/core';
-import { Note } from '../note';
-import { StatusEmitter } from '../status-bar/status';
 
-import { SettingsService } from '../services/settings.service';
-import { DataService } from '../services/data.service';
 import { Subject } from 'rxjs/Subject';
 // Observable operators
 import 'rxjs/add/operator/mapTo';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
+
+import { Note } from '../note';
+import { StatusEmitter } from '../status-bar/status';
+import { DataService } from '../services/data.service';
 
 declare var tinymce: any;
 
@@ -36,7 +36,6 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 //  constructor(private noteService: NoteService) {}
   constructor(
     private noteService: DataService,
-    private settingsService: SettingsService,
     private alerter: StatusEmitter) {}
 
   ngOnInit(): void {
@@ -77,13 +76,13 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
       menubar: false,
       inline: true,
       setup: editor => this.setupNoteEditor(editor),
-      init_instance_callback: editor => editor.setContent(this.note.content||'')
+      init_instance_callback: editor => editor.setContent(this.note.content)
     });
-//    this.noteEditor.setContent(this.note.content||'');
+    this.noteEditor.setContent(this.note.content);
   }
 
   ngOnDestroy() {
-    this.noteEditor.setContent('');
+    if (this.noteEditor) {  this.noteEditor.setContent(''); }
     tinymce.remove(this.noteEditor);
   }
 
@@ -100,9 +99,8 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
   setupNoteEditor(editor) {
     this.noteEditor = editor;
     editor.on('keyup', () => {
-//      this.note.content = editor.getContent();
-//      this.save();
-      this.contentSubject.next(editor.getContent());  // register the content to be saved
+      // register the content to be saved
+      this.contentSubject.next(editor.getContent());  
     });
     editor.on('blur', () => editor.fire('keyup'));
     editor.on('change', () => editor.fire('keyup'));

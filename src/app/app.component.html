@@ -1,5 +1,5 @@
-<header [ngClass]="settingsService.skins(['module', 'header'])">
-	<!--img src="assets/images/knot-note-48x48.png" class="icon"-->
+<div  [ngClass]="settingsService.skin()">
+<header class="module header">
 	<div class="icon"></div>
 	<span class="title">{{title}}</span>
 	<app-menu [values]="menuValues" [position]="'right'" (onSelect)="action($event)"></app-menu>

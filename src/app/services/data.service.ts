@@ -6,13 +6,14 @@ import { StatusEmitter } from '../status-bar/status';
 import { SettingsService } from '../services/settings.service';
 import * as PouchDB from 'pouchdb';  
 import * as PouchDBFind from 'pouchdb-find';
-import { Settings, knot_notes_dbname } from '../admin/settings';
+import { Settings, knot_notes_dbname, settings_id } from '../admin/settings';
 
 @Injectable()
 export class DataService {
 
   private db: any;
   private remote: string;
+  private sync;
 
   rootNotebook: Notebook;
   notes: Note[];
@@ -27,7 +28,7 @@ export class DataService {
     this.db = new PouchDB(knot_notes_dbname);
     window['PouchDB'] = PouchDB; // for debugging purpose
 
-    this.settingsService.loadSettings()
+    this.settingsService.loadSettings(this.db, true)
       .then(settings => this.trySyncToRemote(settings))
       .catch(err => this.handleError(err));
 
@@ -58,34 +59,39 @@ export class DataService {
         live: true,
         retry: true,
         continuous: true,
+        filter: function (doc) {
+          return doc._id !== settings_id;
+        },
         auth: {
           username: settings.remoteDBSettings.username,
           password: settings.remoteDBSettings.password
         }
       };
 
-      this.db.sync(this.remote, options)
-        .on('error', err => that.handleError(err))
+      this.sync = this.db.sync(this.remote, options)
+        .on('error', err => that.alerter.syncState('error: ' + err))
         .on('change', info => this.handleChange(info))
   // replication paused (e.g. replication up to date, user went offline)
-        .on('paused', err => this.alerter.warning(err))
+        .on('paused', err => this.alerter.syncState('paused'))
   // replicate resumed (e.g. new changes replicating, user went back online)
-        .on('active', () => this.alerter.info('Sync active'))
+        .on('active', () => this.alerter.syncState('active'))
   // a document failed to replicate (e.g. due to permissions)
-        .on('denied', err => this.handleError(err))
+        .on('denied', err => this.alerter.syncState('access denied'))
   // handle complete
-        .on('complete', info => this.alerter.info('Sync complete: ' + info));
+        .on('complete', info => this.alerter.syncState('complete: ' + info));
     }
   }
 
   stopSyncing() {
-// TODO: implement stopSyncing
+    if (this.sync) { this.sync.cancel(); }
   }
 
   handleChange(change) {
-    if (this.rootNotebook && this.rootNotebook.id === change.id) {
+    if (change.id === settings_id) {
+      this.settingsService.handleChange(change);
+    } else if (this.rootNotebook && this.rootNotebook.id === change.id) {
       if (change.deleted) {
-        this.alerter.error('root notebook deleted!!!');
+        this.alerter.error('Root notebook deleted!!!');
       } else if (this.rootNotebook.rev !== change.doc._rev) { // do nothing if same rev
         this.rootNotebook.updateFrom(change.doc);
       }
@@ -170,8 +176,6 @@ export class DataService {
     const that = this;
     return new Promise((resolve, reject) => {
       that.db.createIndex({
-        // index: {fields: ['notebookid', 'order']}
-        // index: {fields: ['order', 'notebookid']}
         index: {fields: ['notebookid']}
       }).then(function () {
         that.db.find ({
@@ -179,14 +183,12 @@ export class DataService {
             $and: [
               {notebookid: {$exists: true}},
               {notebookid: {$eq: notebookid}},
-          //    {order: {$exists: true}}
+              {order: {$gt: true}}
              ]},
-        //  sort: [{'order': 'desc'}]
+           sort: [{'order': 'desc'}]
         }).then (result => {
           that.notes = [];
           result.docs.map((doc) => { that.notes.push(new Note(doc)); });
-          that.notes.sort((n1, n2) => n1.order - n2.order);
-          // that.notes.reverse();
           resolve(that.notes);
         }).catch((error) => that.handleError(error, reject));
       });

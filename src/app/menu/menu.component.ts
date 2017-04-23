@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { SettingsService } from '../services/settings.service';
 
 export class DropdownValue {
   value: string;
@@ -22,6 +21,4 @@ export class MenuComponent {
   @Input() position: string;
 
   @Output() onSelect = new EventEmitter<string>();
-
-  constructor(private settingsService: SettingsService) {}
 }

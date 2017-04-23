@@ -1,4 +1,4 @@
-<div [ngClass]="settingsService.skin('menu-wrapper')" [class.menu-right]="position=='right'" (mouseenter)="opened=true" (mouseleave)="opened=false">
+<div class="menu-wrapper" [class.menu-right]="position=='right'" (mouseenter)="opened=true" (mouseleave)="opened=false">
 	<button class="menu-button fa fa-bars fa-2x" [class.opened-menu-button]="opened"></button>
 	<div *ngIf="opened" class="menu-dropdown">
 	  <ul class="menu">

@@ -15,10 +15,8 @@
    $info_msg_bgcolor
 )  {
 
-//@debug $title_color saturation($title_color) (saturation($title_color) + 50)%100 lightness($title_color) (lightness($title_color) + 50)%100;
-//$header_bg: hsl(hue($title_color), saturation($title_color), (lightness($title_color)+50%)%100);
-
-  .#{$skin}-header {
+.#{$skin}-skin {
+  .header {
     .icon {
       background-image: url(/assets/images/knot-note-#{$icon_color}-48x48.png);
       background-repeat: no-repeat;
@@ -45,15 +43,14 @@
 		  }
     }
   }
-//@debug $dark_color   transparentize($dark_color, 0.25) fade-out($dark_color, 0.25);
-  .#{$skin}-h2, .#{$skin}-h3 {
+  .h2, .h3 {
     color: transparentize($dark_color, 0.25); // fade-out($dark_color, 0.25);
   }
 
-  .#{$skin}-defaultcolor {
+  .defaultcolor {
       color: $very_dark_color;
   }
-  .#{$skin}-button {
+  button {
       background-color: $light_color;
       border: 1px solid $dark_color;
       color: $dark_color;
@@ -66,7 +63,7 @@
   	    color: $very_dark_color;
      }
   }
-  .#{$skin}-items {
+  .items {
     li {
       background-color: $very_light_color;
       border-color: $dark_color;
@@ -93,7 +90,7 @@
       background-color: $light_color; 
     }
   }
-  .#{$skin}-module, .#{$skin}-settings *, .#{$skin}-header {
+  .module, .settings *, .header {
      color: $dark_color; 
      background-color: $light_color;
      border-color: $dark_color;
@@ -101,9 +98,9 @@
   }
 
      /* overrides items color in module */
-  .#{$skin}-module .items li { color:$dark_color; }
+  .module .items li { color:$dark_color; }
 
-  .#{$skin}-tree-wrapper {
+  .tree-wrapper {
     .node-content-wrapper {
        color: $dark_color;
        // background-color: $very_light_color;
@@ -131,7 +128,7 @@
       background-color: $dark_color_sel !important;
     }
   }
-  .#{$skin}-note-editor-container {
+  .note-editor-container {
     	border: solid 2px $dark_color;
       background-color: $very_light_color;
      	header {  // always light on dark
@@ -151,21 +148,26 @@
         color: $dark_color;
       }
    }
-   .#{$skin}-notebook-title {
+   .notebook-title {
       background-color: $very_light_color;
       color: $dark_color; 
    }
-  .#{$skin}-info-status {
+  .info-status {
     color: $info_msg_color;
     background-color: $info_msg_bgcolor;
   }
-  .#{$skin}-warning-status {
+  .warning-status {
     color: $warning_msg_color;
     background-color: $warning_msg_bgcolor;
   }
-  .#{$skin}-error-status {
+  .error-status {
     color: $error_msg_color;
     background-color: $error_msg_bgcolor;
   }
+  .sync-status {
+    color: $very_light_color;
+    background-color: $very_dark_color;   
+  }
 }
 
+}

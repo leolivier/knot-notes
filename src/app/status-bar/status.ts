@@ -3,7 +3,7 @@
  */
 import { EventEmitter, Output, Injectable } from '@angular/core';
 
-export enum StatusKind { Error, Warning, Info }
+export enum StatusKind { Error, Warning, Info, Sync }
 
 export class Status {
   kind = StatusKind.Info ;
@@ -24,6 +24,8 @@ export class StatusEmitter {
   warning(message: string) { this.emit(message, StatusKind.Warning); }
 
   info(message: string) { this.emit(message, StatusKind.Info); }
+
+  syncState(message: string) { this.emit(message, StatusKind.Sync)}
 
   subscribe(method) { this.emitter.subscribe(method); }
 

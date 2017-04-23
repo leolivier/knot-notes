@@ -1,3 +1,4 @@
-<p [ngClass]="class()">
-  {{status.message}}
+<p>
+  <span [ngClass]="class()">{{status.message}}</span>
+  <span *ngIf=[syncState] class="sync-status">Sync {{syncState.message}}</span>
 </p>
