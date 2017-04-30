@@ -29,11 +29,19 @@ export class NotebookShowComponent {
   @Output() onSelectedNote = new EventEmitter<Note>();
 
   notes: Note[];
-  selectedNote: Note;
+
+  private _selectedNote: Note;
+  get selectedNote(): Note { return this._selectedNote; }
+  set selectedNote(n: Note) {
+    this._selectedNote = n;
+    this.onSelectedNote.emit(n);
+  }
 
   constructor(
     private noteService: DataService,
-    private alerter: StatusEmitter) {}
+    private alerter: StatusEmitter) {
+      this.notes = [];
+    }
 
   name(): string {
     return (this.currentNotebook ? this.currentNotebook.fullName() : 'no selection');
@@ -142,7 +150,6 @@ export class NotebookShowComponent {
       nt.order = idx;
       this.noteService.saveNote(nt);
     });
-    // force redisplay
   }
 }
 

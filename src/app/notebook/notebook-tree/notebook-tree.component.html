@@ -1,6 +1,6 @@
 <div class="tree-wrapper">
-	<tree-root #notebookTree [nodes]="rootNotebook" [focused]="true"  
-			(onActivate)="selectNotebook($event)" [options]="customTemplateStringOptions" class="notebookTree">
+	<tree-root #notebookTree [nodes]="[rootNotebook]" [focused]="true"  
+			(onActivate)="selectedNotebook = $event.node.data" [options]="customTemplateStringOptions" class="notebookTree">
 	 <ng-template #treeNodeTemplate let-node="node" let-index="index">
 	    <span *ngIf="!isEditable(node.data.id)" (dblclick)="startEdition(node.data.id)"
 	    	i18n-title title="double clic to edit, drag&amp;drop to change parent">

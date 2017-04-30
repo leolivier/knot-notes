@@ -21,22 +21,29 @@ export class DataService {
   constructor(
     private settingsService: SettingsService,
     private alerter: StatusEmitter
-    ) {
+  ) {
 
     PouchDB.plugin(PouchDBFind);
     // create/open local database
     this.db = new PouchDB(knot_notes_dbname);
+
+    this.db.info().then(res => {
+      console.log(res)
+      if (res.update_seq === 0) { // new database => create initial root notebook
+          this.db.saveRootNotebook(new Notebook({_id: Notebook.rootId, name: '/'}));
+      }
+    });
+    this.db.compact();
     window['PouchDB'] = PouchDB; // for debugging purpose
-
-    this.settingsService.loadSettings(this.db, true)
-      .then(settings => this.trySyncToRemote(settings))
-      .catch(err => this.handleError(err));
-
     this.db.setMaxListeners(30);
     // set up changes callback
     this.db.changes({ live: true, since: 'now', include_docs: true })
       .on('change', (change) => { this.handleChange(change); })
       .on('error', err => this.handleError(err));
+
+    this.settingsService.loadSettings(this.db, true)
+      .then(settings => this.trySyncToRemote(settings))
+      .catch(err => this.handleError(err));
 
     this.getRootNotebook();
   }
@@ -128,7 +135,7 @@ export class DataService {
 
   getRootNotebook(): Promise<Notebook> {
     const that = this;
-//    if (this.rootNotebook) { return Promise.resolve(this.rootNotebook); } must reread if changed by someone else
+    if (this.rootNotebook) { return Promise.resolve(this.rootNotebook); } 
     return new Promise((resolve, reject) => {
       that.db.get(Notebook.rootId).then(doc => {
         if (that.rootNotebook) {
@@ -137,14 +144,7 @@ export class DataService {
           that.rootNotebook = new Notebook(doc);
         }
         resolve(that.rootNotebook);
-      }).catch((error) => {
-        if (error.name === 'not_found') {
-          // initial root notebook
-          that.saveRootNotebook(new Notebook({_id: Notebook.rootId, name: '/'}));
-        } else {
-          that.handleError(error, reject);
-        }
-      });
+      }).catch((error) => that.handleError(error, reject));
     });
   }
 
@@ -165,50 +165,53 @@ export class DataService {
 
   getNotebook(notebookid: string): Promise<Notebook> {
     const that = this;
-    if (this.rootNotebook) {
+    return this.getRootNotebook().then(rnb => {
       const nb = that.rootNotebook.findById(notebookid);
       return (nb? Promise.resolve(nb) : Promise.reject('Notebook #' + notebookid + ' not found'));
-    }
-    return this.getRootNotebook().then(nb => nb.findById(notebookid));
+    }).catch(err => this.handleError("root book not found: " + err));
   }
 
   getNotebookNotes(notebookid: string): Promise<Note[]> {
     const that = this;
     return new Promise((resolve, reject) => {
-      that.db.createIndex({
-        index: {fields: ['notebookid']}
-      }).then(function () {
-        that.db.find ({
-          selector: {
-            $and: [
-              {notebookid: {$exists: true}},
-              {notebookid: {$eq: notebookid}},
-              {order: {$gt: true}}
-             ]},
-           sort: [{'order': 'desc'}]
-        }).then (result => {
-          that.notes = [];
-          result.docs.map((doc) => { that.notes.push(new Note(doc)); });
-          resolve(that.notes);
-        }).catch((error) => that.handleError(error, reject));
-      });
+      this.getNotebook(notebookid).then(nb => {  // ensure root note book loaded first and note book id exists
+        that.db.createIndex({
+          index: {fields: ['notebookid']}
+        }).then(function () {
+          that.db.find ({
+            selector: {
+              $and: [
+                {notebookid: {$exists: true}},
+                {notebookid: {$eq: notebookid}},
+                {order: {$gt: true}}
+              ]},
+            sort: [{'order': 'desc'}]
+          }).then (result => {
+            that.notes = [];  // reset notes
+            result.docs.map((doc) => { that.notes.push(new Note(doc)); });
+            resolve(that.notes);
+          }).catch((error) => that.handleError("cannot load notebook '" + nb.name + "' notes: " + error, reject));
+        });
+      }).catch(err => this.handleError(err, reject));
     });
   }
 
   getNote(id: string): Promise<Note> {
     const that = this;
-    const n = that.notes.find(nt => nt.id === id);
-    if (n) { return Promise.resolve(n); }
+     // try to find in already loaded notes
+    if (this.notes)  {
+      const n = that.notes.find(nt => nt.id === id);
+      if (n) { return Promise.resolve(n); }
+    }
+    // if not found, try to get it from database
     return new Promise((resolve, reject) => {
       that.db.get(id).then(doc => {
         doc.id = doc._id;
         const nt = new Note(doc);
         that.notes.push(nt);
         resolve(nt);
-        if (!that.rootNotebook) { // load root notebook if not already done
-          that.getRootNotebook().then(() => that.getNotebookNotes(nt.notebookid)); // load notebook if not already done
-        }
-      });
+        that.getNotebookNotes(nt.notebookid); // load full notebook if not already done
+      }).catch(err => that.handleError(err, reject)); // note not found probably
     });
   }
 

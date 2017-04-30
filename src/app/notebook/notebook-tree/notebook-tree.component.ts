@@ -47,8 +47,24 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   private notebookTree: TreeComponent;
 
   // the notebook tree
-  rootNotebook: Notebook[];
-  selectedNotebook: Notebook;
+  private _rootNotebook: Notebook;
+  get rootNotebook(): Notebook { return this._rootNotebook; }
+  set rootNotebook(root: Notebook) {
+    this.expandAll(root);
+  // set the data in the node tree (as an array because this is the way the TreeComponent wants it)
+    this._rootNotebook = root;
+    this.selectedNotebook = root;
+    this.alerter.info('Root initialized');
+  }
+
+
+  // the currently selected notebook
+  private _selectedNotebook: Notebook;
+  get selectedNotebook(): Notebook { return this._selectedNotebook; }
+  set selectedNotebook(nb: Notebook) {
+    this._selectedNotebook = nb;
+    this.onSelectedNotebook.emit(nb);
+  }
 
   constructor(
     private router: Router,
@@ -57,39 +73,24 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     private noteService: DataService,
     private alerter: StatusEmitter) {
     // creates a pseudo tree (or else the TreeComponent won't update)
-    this.initRoot(new Notebook({ name: '/' }));
+    this.rootNotebook = new Notebook({_id: Notebook.rootId, name: '/' });
   }
 
   // load the notebook tree at init
   ngOnInit() {
     this.noteService.getRootNotebook()
-      .then(notebook => this.initRoot(notebook))
+      .then(notebook => this.rootNotebook = notebook)
       .then(() => this.notebookTree.treeModel.getFirstRoot().setActiveAndVisible());
   }
 
   ngAfterViewInit() {
-    //    setTimeout(() => this.notebookTree.treeModel.expandAll());
-    //    this.notebookTree.treeModel.getFirstRoot().setActiveAndVisible();
-  }
-
-  // set the data in the node tree (as an array because this is the way the TreeComponent wants it)
-  initRoot(root: Notebook): void {
-    this.expandAll(root);
-    this.rootNotebook = [root];
-    this.selectedNotebook = root;
-    // this.notebookTree.treeModel.update();
-    this.alerter.info('Root initialized');
+    setTimeout(() => this.notebookTree.treeModel.expandAll());
   }
 
   saveRoot() {
     this.noteService.saveRootNotebook(this.rootNotebook[0])
-      .then(nb => this.rootNotebook = [nb])
+      .then(nb => this.rootNotebook = nb)
       .catch(reason => this.alerter.error(reason));
-  }
-
-  selectNotebook($event) {
-    this.selectedNotebook = $event.node.data;
-    this.onSelectedNotebook.emit(this.selectedNotebook);
   }
 
   isEditable(id: string): boolean {
