@@ -46,7 +46,6 @@ import { StatusEmitter } from './status-bar/status';
     SettingsComponent,
     StatusBarComponent
   ],
-//  providers: [NoteService, DataService],
   providers: [DataService, StatusEmitter, SettingsService],
   bootstrap: [AppComponent]
 })
