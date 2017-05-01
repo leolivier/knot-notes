@@ -1,6 +1,6 @@
 {
   "name": "knot-notes",
-  "version": "1.0.0-a2",
+  "version": "1.0.0-a3",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
