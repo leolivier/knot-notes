@@ -88,7 +88,7 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   }
 
   saveRoot() {
-    this.noteService.saveRootNotebook(this.rootNotebook[0])
+    this.noteService.saveRootNotebook(this.rootNotebook)
       .then(nb => this.rootNotebook = nb)
       .catch(reason => this.alerter.error(reason));
   }
@@ -115,7 +115,7 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
 
   cancelEdition(id: string): void {
     if (this._editableNodeId === id) {
-      const n = this.rootNotebook[0].findById(this._editableNodeId);
+      const n = this.rootNotebook.findById(this._editableNodeId);
       n.name = this._initialName;
       const nt = this.notebookTree.treeModel.getNodeById(id);
       nt.data.name = this._initialName;

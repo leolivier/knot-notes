@@ -22,30 +22,35 @@ export class DataService {
     private settingsService: SettingsService,
     private alerter: StatusEmitter
   ) {
-
     PouchDB.plugin(PouchDBFind);
+    this.initDB();
+  }
+
+  private initDB() {
     // create/open local database
     this.db = new PouchDB(knot_notes_dbname);
-
-    this.db.info().then(res => {
-      console.log(res)
-      if (res.update_seq === 0) { // new database => create initial root notebook
-          this.db.saveRootNotebook(new Notebook({_id: Notebook.rootId, name: '/'}));
-      }
-    });
-    this.db.compact();
     window['PouchDB'] = PouchDB; // for debugging purpose
     this.db.setMaxListeners(30);
     // set up changes callback
     this.db.changes({ live: true, since: 'now', include_docs: true })
       .on('change', (change) => { this.handleChange(change); })
       .on('error', err => this.handleError(err));
-
-    this.settingsService.loadSettings(this.db, true)
-      .then(settings => this.trySyncToRemote(settings))
-      .catch(err => this.handleError(err));
-
-    this.getRootNotebook();
+    const that = this;
+    this.db.info().then(res => {
+      console.log(that.db);
+      console.log(res);
+      if (res.update_seq === 0) { // new database => create initial root notebook
+        that.rootNotebook = new Notebook({_id: Notebook.rootId, name: '/'});
+        that.settingsService.loadSettings(that.db, true);
+        that.saveRootNotebook(that.rootNotebook).catch(err => that.handleError(err));
+      } else {
+        that.db.compact();
+        that.settingsService.loadSettings(that.db, true)
+          .then(settings => that.trySyncToRemote(settings))
+          .catch(err => that.handleError(err));
+        that.getRootNotebook();
+      }
+    });
   }
 
   private handleError(error: any, reject?) {
@@ -133,18 +138,34 @@ export class DataService {
     }
   }
 
+  private _getRootNotebook(resolve, reject) {
+    const that = this;
+    if (this.rootNotebook) { resolve(this.rootNotebook); } 
+    
+    that.db.get(Notebook.rootId).then(doc => {
+      if (that.rootNotebook) {
+        that.rootNotebook.updateFrom(doc);
+      } else {
+        that.rootNotebook = new Notebook(doc);
+      }
+      resolve(that.rootNotebook);
+    }).catch((error) => {
+      if (error.reason === 'missing') {
+        setTimeout(() => {
+          // retry later
+          that._getRootNotebook(resolve, reject);
+        }, 150);
+      } else {
+        that.handleError(error, reject);
+      }
+    });    
+  }  
+
   getRootNotebook(): Promise<Notebook> {
     const that = this;
     if (this.rootNotebook) { return Promise.resolve(this.rootNotebook); } 
     return new Promise((resolve, reject) => {
-      that.db.get(Notebook.rootId).then(doc => {
-        if (that.rootNotebook) {
-          that.rootNotebook.updateFrom(doc);
-        } else {
-          that.rootNotebook = new Notebook(doc);
-        }
-        resolve(that.rootNotebook);
-      }).catch((error) => that.handleError(error, reject));
+      that._getRootNotebook(resolve, reject);
     });
   }
 
@@ -185,9 +206,10 @@ export class DataService {
                 {notebookid: {$eq: notebookid}},
                 {order: {$gt: true}}
               ]},
-            sort: [{'order': 'desc'}]
+//            sort: [{'order': 'desc'}]
           }).then (result => {
             that.notes = [];  // reset notes
+            that.notes.sort((a, b) => a.order - b.order);
             result.docs.map((doc) => { that.notes.push(new Note(doc)); });
             resolve(that.notes);
           }).catch((error) => that.handleError("cannot load notebook '" + nb.name + "' notes: " + error, reject));
@@ -262,7 +284,13 @@ export class DataService {
       }).catch(error => that.handleError(error, reject))
     });
   }
-
+  
+  destroydb() {
+    this.db.destroy().then(() => {
+      this.alerter.warning("Local database destroyed...");
+ //     this.initDB();
+    });
+  }
 /*
       that.db.allDocs({
         include_docs: true,
