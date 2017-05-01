@@ -41,11 +41,18 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.settingsService.loadSettings()
-      .then(settings => {
-        this.settings = settings;
-        this.checkCrypto();
-    });
+    const that = this;
+    if (this.settingsService.settings) {
+      this.settings = this.settingsService.settings;
+      this.checkCrypto();
+    } else {
+      setTimeout(()=>that.ngOnInit(), 500);
+    }
+//    this.settingsService.loadSettings()
+//      .then(settings => {
+//        this.settings = settings;
+//        this.checkCrypto();
+//    });
   }
 
   checkCrypto() {
@@ -65,5 +72,11 @@ export class SettingsComponent implements OnInit {
 
   see() {
     alert('Have a look, please! ' + JSON.stringify(this.settings));
+  }
+
+  destroy_db() {
+    if (confirm("Warning! You will destroy the local database. It has no impact on the server database if you are synchronized.\nPlease confirm or cancel...")) {
+      this.dataService.destroydb();
+    }
   }
 }
