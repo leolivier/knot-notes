@@ -1,5 +1,9 @@
 # RELEASES 
 
+## 1.0-alpha3
+* Fixed a bug at first usage
+* Added a "remove local database" button in the settings to force resync with server or restart from scratch if no sync
+
 ## 1.0-alpha2
 * Skin management
 * Better management of errors for users

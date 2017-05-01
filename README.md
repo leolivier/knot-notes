@@ -29,7 +29,7 @@ __WARNING: This is still an alpha release!__
 * Create a directory named knot-notes in the root of your http server 
 * Download the [1.0.alpha-2 release](https://github.com/leolivier/knot-notes/raw/master/knot-notes-1.0.0-a2.zip) zip file, 
 unzip it in the directory above.
-* If necessary, manage the server configuration so that the new directory can be accessed
+* If necessary, manage the server configuration so that the new directory can be accessed and manage fallback to index.html (see [server configuration](https://angular.io/docs/ts/latest/guide/deployment.html#!#fallback) on Angular documentation)
 * That's it!
 
 ###Server database
