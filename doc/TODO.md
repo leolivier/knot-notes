@@ -5,6 +5,7 @@
 * Manage confirmation before removing notes and notebooks
 * Test on Safari, Opera
 * Better management of skins (load only one skin at a time instead of all)
+* Better synchronization management of the notebook tree (when sync starts, the local version erases the one stored in database, possibly leading to losing access to notebooks)
 
 ## New features requests
 * Crypt content when stored in a remote db
@@ -13,6 +14,7 @@
 * Create a mobile application
 * Test with CouchBase, PouchDB Server and Cloudant database servers
 * Implement search in notes
+* Add a "share" button to copy the link of a note or a notebook
 
 ## Bugs
 * Probably don't work on IE (not tested)

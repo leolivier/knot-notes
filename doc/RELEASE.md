@@ -1,7 +1,7 @@
 # RELEASES 
 
 ## 1.0-alpha3
-* Manage deep links correctly so that url containing note ids can work and show the note  
+* Manages deep links correctly so that url containing note or notebook ids work and show the note or notebook. This allows user to share their notes or notebooks with other users by sending a link.  
 * Fixed a bug at first usage
 * Added a "remove local database" button in the settings to force resync with server or restart from scratch if no sync
 
