@@ -11,11 +11,10 @@
 * Implement tags
 * Add account management (be able to manage several accounts on one CouchDB server)
 * Create a mobile application
-* Test with CouchBase and Cloudant servers
+* Test with CouchBase, PouchDB Server and Cloudant database servers
 * Implement search in notes
 
 ## Bugs
-* Still a problem on first usage on a browser
 * Probably don't work on IE (not tested)
 * css need some fix in Firefox
 * Fix css for the loading message
