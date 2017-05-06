@@ -16,8 +16,6 @@ export class AppComponent {
     { value: 'settings', label: 'Settings' }
   ];
 
-  status: Status;
-
   constructor(
     private router: Router,
     private settingsService: SettingsService,
@@ -25,9 +23,6 @@ export class AppComponent {
 
   action(act: string) {
     this.router.navigate([act]);
-  }
-  setStatus($event) {
-    this.status = $event;
   }
 
   skin() { return this.settingsService.skin(); }
