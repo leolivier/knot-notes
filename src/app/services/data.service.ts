@@ -186,10 +186,12 @@ export class DataService {
 
   getNotebook(notebookid: string): Promise<Notebook> {
     const that = this;
-    return this.getRootNotebook().then(rnb => {
-      const nb = that.rootNotebook.findById(notebookid);
-      return (nb? Promise.resolve(nb) : Promise.reject('Notebook #' + notebookid + ' not found'));
-    }).catch(err => this.handleError("root book not found: " + err));
+    return new Promise((resolve, reject) => {
+      this.getRootNotebook().then(rnb => {
+        const nb = that.rootNotebook.findById(notebookid);
+        if (nb) resolve(nb); else reject('Notebook #' + notebookid + ' not found');
+      }).catch(err => this.handleError("root book not found: " + err))
+    });
   }
 
   getNotebookNotes(notebookid: string): Promise<Note[]> {
@@ -230,6 +232,7 @@ export class DataService {
       that.db.get(id).then(doc => {
         doc.id = doc._id;
         const nt = new Note(doc);
+        if (!that.notes) that.notes = [];
         that.notes.push(nt);
         resolve(nt);
         that.getNotebookNotes(nt.notebookid); // load full notebook if not already done

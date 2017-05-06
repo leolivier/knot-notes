@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, EventEmitter, Input, Output } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Location } from '@angular/common';
 
@@ -32,7 +32,7 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   private _editableNodeId = '';
   private _initialName = '';
 
-  customTemplateStringOptions = {
+  treeOptions = {
     // displayField: 'subTitle',
     actionMapping,
     //    nodeHeight: 23,
@@ -47,24 +47,13 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   private notebookTree: TreeComponent;
 
   // the notebook tree
-  private _rootNotebook: Notebook;
-  get rootNotebook(): Notebook { return this._rootNotebook; }
-  set rootNotebook(root: Notebook) {
-    this.expandAll(root);
-  // set the data in the node tree (as an array because this is the way the TreeComponent wants it)
-    this._rootNotebook = root;
-    this.selectedNotebook = root;
-    this.alerter.info('Root initialized');
-  }
-
+  rootNotebook: Notebook;
 
   // the currently selected notebook
-  private _selectedNotebook: Notebook;
-  get selectedNotebook(): Notebook { return this._selectedNotebook; }
-  set selectedNotebook(nb: Notebook) {
-    this._selectedNotebook = nb;
-    this.onSelectedNotebook.emit(nb);
-  }
+  selectedNotebook: Notebook;
+
+  // injected current selected note
+  @Input() selectedNote: Note;
 
   constructor(
     private router: Router,
@@ -72,19 +61,43 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     private location: Location,
     private noteService: DataService,
     private alerter: StatusEmitter) {
-    // creates a pseudo tree (or else the TreeComponent won't update)
-    this.rootNotebook = new Notebook({_id: Notebook.rootId, name: '/' });
+    this.noteService.getRootNotebook()
+      .then(notebook => {
+        this.rootNotebook = notebook;
+        this.alerter.info('Root initialized');
+      });
   }
 
-  // load the notebook tree at init
-  ngOnInit() {
-    this.noteService.getRootNotebook()
-      .then(notebook => this.rootNotebook = notebook)
-      .then(() => this.notebookTree.treeModel.getFirstRoot().setActiveAndVisible());
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
-    setTimeout(() => this.notebookTree.treeModel.expandAll());
+  }
+
+  // expandAll not taken into account so rewrite it
+  expandAll(nb: Notebook) {
+    const that = this;
+    nb['isExpanded'] = true;
+    if (nb.children && Array.isArray(nb.children)) { nb.children.forEach((c) => that.expandAll(c)); }
+  }
+
+  setSelectedNotebook(nb: Notebook) {
+    this.selectedNotebook = nb;
+    if (!this.selectedNote || this.selectedNote.notebookid != nb.id) { // avoid overriding current note
+      this.onSelectedNotebook.emit(nb);
+    }  
+  }
+
+  selectNotebook(nb: Notebook) {
+    setTimeout(() => {
+      const n = (nb.id === Notebook.rootId) ? this.notebookTree.treeModel.getFirstRoot() : this.notebookTree.treeModel.getNodeById(nb.id);
+      if (n) {
+        n.focus();        
+        n.setActiveAndVisible();
+        n.expandAll(); // expand all subtree
+      } else {
+        this.alerter.error('notebook ' + nb.fullName() + ' not found');
+      }
+    }, 150);
   }
 
   saveRoot() {
@@ -104,13 +117,6 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
       this._initialName = n.data.name;
       n.setActiveAndVisible();
     }
-  }
-
-  // expandAll not taken into account so rewrite it
-  expandAll(nb: Notebook) {
-    const that = this;
-    nb['isExpanded'] = true;
-    if (nb.children && Array.isArray(nb.children)) { nb.children.forEach((c) => that.expandAll(c)); }
   }
 
   cancelEdition(id: string): void {
@@ -165,21 +171,5 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     // update the display
     this.notebookTree.treeModel.update();
     this.saveRoot();
-  }
-
-  // find a tree node by its id (recursively) or null if the id is not found
-/* useless, replaced by this.notebookTree.treeModel.getNodeById(id);
-  findNodeById(from: TreeNode, id: string): TreeNode {
-    if (from.id === id) {
-      return from;
-    } else if (from.children && from.children.length > 0) {
-      return from.children.find(c => this.findNodeById(c, id) != null);
-//      for (let c of from.children) {
-//        const r = this.findNodeById(c, id);
-//        if (r) { return r; }
-//      }
-    }
-    return null;
-  }
-*/
+  }  
 }

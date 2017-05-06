@@ -1,7 +1,8 @@
-<div class="tree-wrapper">
+<div class="tree-wrapper" *ngIf="rootNotebook">
 	<tree-root #notebookTree [nodes]="[rootNotebook]" [focused]="true"  
-			(onActivate)="selectedNotebook = $event.node.data" [options]="customTemplateStringOptions" class="notebookTree">
-	 <ng-template #treeNodeTemplate let-node="node" let-index="index">
+			(onActivate)="setSelectedNotebook($event.node.data)" [options]="treeOptions" class="notebookTree">
+	<ng-template i18n #loadingTemplate>Loading notebooks, please hold on....</ng-template>
+	<ng-template #treeNodeTemplate let-node="node" let-index="index">
 	    <span *ngIf="!isEditable(node.data.id)" (dblclick)="startEdition(node.data.id)"
 	    	i18n-title title="double clic to edit, drag&amp;drop to change parent">
 	    	{{ node.data.name }}
