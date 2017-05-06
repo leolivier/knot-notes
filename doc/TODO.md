@@ -1,10 +1,10 @@
 # TODO List
 
 ## Enhancements requests
-* Manage deep links correctly so that url containing note ids can work and show the note  
 * Internationalization
 * Manage confirmation before removing notes and notebooks
 * Test on Safari, Opera
+* Better management of skins (load only one skin at a time instead of all)
 
 ## New features requests
 * Crypt content when stored in a remote db
@@ -12,6 +12,7 @@
 * Add account management (be able to manage several accounts on one CouchDB server)
 * Create a mobile application
 * Test with CouchBase and Cloudant servers
+* Implement search in notes
 
 ## Bugs
 * Still a problem on first usage on a browser
