@@ -44,7 +44,7 @@ export class NotebookShowComponent {
     }
 
   name(): string {
-    return (this.currentNotebook ? this.currentNotebook.fullName() : 'no selection');
+    return (this.currentNotebook ? this.noteService.notebookFullName(this.currentNotebook) : 'no selection');
   }
 
   selectNote(note: Note): void {
