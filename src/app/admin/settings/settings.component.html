@@ -29,8 +29,8 @@
 	</fieldset>
 	<div class="skinset">
 		<label i18n>Skin</label>
-		<select (change)="setSkin($event)">
-			<option *ngFor="let s of skins()" [selected]="s == skin()">{{s}}</option>
+		<select (change)="skin = $event.target.value">
+			<option *ngFor="let s of skins()" [selected]="s == skin">{{s}}</option>
 		</select>
 	</div>
 	<button (click)="save()" i18n
