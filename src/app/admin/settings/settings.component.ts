@@ -15,13 +15,11 @@ export class SettingsComponent implements OnInit {
   settings = new Settings;
   showKey: string;
   crypto: Crypto;
-  setSkin($event) { 
-    this.settings.skin = $event.target.value; 
-  }
+  set skin(s: string) { this.settings.skin = s; }
+  get skin(): string { return this.settings.skin; }
   skins(): string[] {
     return skins;
   }
-  skin(): string { return this.settings.skin; }
 
   get useRemoteDB(): boolean { return this.settings.useRemoteDB; }
   set useRemoteDB(val: boolean) {
@@ -48,11 +46,6 @@ export class SettingsComponent implements OnInit {
     } else {
       setTimeout(()=>that.ngOnInit(), 500);
     }
-//    this.settingsService.loadSettings()
-//      .then(settings => {
-//        this.settings = settings;
-//        this.checkCrypto();
-//    });
   }
 
   checkCrypto() {
@@ -60,7 +53,9 @@ export class SettingsComponent implements OnInit {
   }
 
   save() {
-    this.settingsService.saveSettings(this.settings);
+    this.settingsService.saveSettings(this.settings).then(settings => {
+      this.settings = settings;
+    });
     if (this.settings.useRemoteDB) { this.dataService.trySyncToRemote(this.settings); }
   }
 
@@ -75,7 +70,7 @@ export class SettingsComponent implements OnInit {
   }
 
   destroy_db() {
-    if (confirm("Warning! You will destroy the local database. It has no impact on the server database if you are synchronized.\nPlease confirm or cancel...")) {
+    if (confirm('Warning! You will destroy the local database. It has no impact on the server database if you are synchronized.\nPlease confirm or cancel...')) {
       this.dataService.destroydb();
     }
   }

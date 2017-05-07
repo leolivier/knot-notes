@@ -13,10 +13,7 @@ export class RemoteDBSettings {
 
 export class Settings {
   private _id = settings_id;
-  private _rev: string;
-  // setter for data.service only!
-  set rev(rev: string) { this._rev = rev; }
-  get rev(): string { return this._rev; }
+  _rev: string;
   useRemoteDB = false;
   remoteDBSettings = new RemoteDBSettings;
   crypt = false;
