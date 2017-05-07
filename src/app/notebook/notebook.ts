@@ -2,7 +2,6 @@ import { INotebook } from './inotebook';
 
 export class Notebook implements INotebook {
   static rootId = 'rootNotebook';
-  parent: Notebook;
   name: string;
   children: Notebook[];
 
@@ -24,15 +23,8 @@ export class Notebook implements INotebook {
     this.name = '' + nb['name'];
     // use the given id or create one
     this._id = (nb['_id'] ? '' + nb['_id'] : this.getId());
-    this.children = (nb['children'] ? nb['children'].map(c => {
-      const newc = new Notebook(c);
-      newc.parent = this;
-      return newc;
-    }, this) : []);
+    this.children = (nb['children'] ? nb['children'].map(c => { return new Notebook(c); }) : []);
     if (nb['_rev']) { this._rev = nb['_rev']; }
-    if (nb['parent']) {
-      this.parent = new Notebook(nb['parent']);
-    }
   }
 
   private getId(): string {
@@ -43,21 +35,12 @@ export class Notebook implements INotebook {
     if (this.id === id) {
       return this;
     } else if (this.children && this.children.length > 0) {
-      return this.children.find(c => c.findById(id) != null);
-//      for (let c of this.children) {
-//        const r = c.findById(id);
-//        if (r) { return r; }
-//      }
+      for (let c of this.children) {
+        const r = c.findById(id);
+        if (r) { return r; }
+      }
     }
     return null;
-  }
-
-  fullName(): string {
-    if (this.parent) {
-      if (this.parent.parent) {
-        return this.parent.fullName() + '/' + this.name;
-      } else { return '/' + this.name; }
-    } else { return '/'; }
   }
 
   toJSON(): string {
