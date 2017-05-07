@@ -25,7 +25,7 @@ export class SettingsService {
         this.settings.skin = 'lightblue';
       }
       return this.settings.skin+'-skin'
-    } else { return 'lightblue'; }
+    } else { return 'lightblue-skin'; }
   }
 
   loadSettings(db = null, force = false): Promise<Settings> {
@@ -57,14 +57,15 @@ export class SettingsService {
   saveSettings(settings?: Settings): Promise<Settings> {
     const that = this;
     if (settings) { that.settings = settings; }
-    if (!that.settings.rev) { that.settings.rev = '0'; }
+//    if (!that.settings.rev) { that.settings.rev = '0'; }
     const o = JSON.parse(JSON.stringify(that.settings));
     return new Promise((resolve, reject) => {
       that.db.put(o).then(response => {
         if (response && response.ok) {
         // be sure to refresh rev number
-          that.settings.rev = response.rev;
+          that.settings._rev = response.rev;
           resolve(that.settings);
+          that.alerter.info('Settings saved');
         }
       }).catch(error => that.handleError(error, reject))
     });
