@@ -169,6 +169,23 @@ export class DataService {
     });
   }
 
+  private lookNbName(root: Notebook, lookFor: Notebook): string {
+    if (root.id === lookFor.id) {
+      return lookFor.name;
+    } else for (var c of root.children) {
+      const r = this.lookNbName(c, lookFor);
+      if (r) {
+        return (root.id === Notebook.rootId ? '' : root.name) + '/' + r;
+      }
+    }
+    return null;
+  } 
+  
+  notebookFullName(n: string | Notebook): string {
+    var nb: Notebook = (n instanceof Notebook) ? n : this.rootNotebook.findById(n);
+    return this.lookNbName(this.rootNotebook, nb);
+  }
+  
   saveRootNotebook(root: Notebook): Promise<Notebook> {
     const that = this;
     this.rootNotebook = root;
@@ -288,9 +305,25 @@ export class DataService {
     });
   }
   
+  deleteNotebookContent(notebook: Notebook): Promise<any> {
+    const that = this;
+    let ps: Promise<any>[] = [];
+    ps.push(new Promise((resolve, reject) => {
+      that.getNotebookNotes(notebook.id).then(notes => {
+        if (notes.length > 0) {
+          notes.forEach(n => n['_deleted'] = true);
+          that.db.bulkDocs(notes)
+            .catch(err => that.handleError(err, reject));
+        }
+      }).catch(error => that.handleError(error, reject))
+    }));
+    notebook.children.forEach(nb => ps.push(this.deleteNotebookContent(nb)));
+    return Promise.all(ps);
+  }
+
   destroydb() {
     this.db.destroy().then(() => {
-      this.alerter.warning("Local database destroyed...");
+      this.alerter.warning("Local database destroyed. Press F5 to reload...");
  //     this.initDB();
     });
   }
