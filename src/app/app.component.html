@@ -1,9 +1,8 @@
 <div  [ngClass]="skin()">
 <header class="module header">
 	<div [routerLink]="['/notes']" class="icon"></div>
-	<span [routerLink]="['/notes']" class="title">{{title}}</span>
-	<app-menu [items]="[ ['notes', 'All Notes'], ['settings', 'Settings']]" [position]="'right'" (onSelect)="action($event)"></app-menu>
+	<span [routerLink]="['/notes']" class="title">Knot Notes</span>
+	<app-menu [items]="[ ['notes', 'All Notes'], ['settings', 'Settings']]" [position]="'right'"></app-menu>
 </header>
-
 <router-outlet></router-outlet>
 <app-status-bar></app-status-bar>

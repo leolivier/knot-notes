@@ -8,12 +8,6 @@ import { SettingsService } from './services/settings.service';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'Knot Notes';
-  menuValues = [
-    { value: 'notes', label: 'All Notes' },
-    { value: 'settings', label: 'Settings' }
-  ];
-
   constructor(
     private settingsService: SettingsService,
   ) { }
