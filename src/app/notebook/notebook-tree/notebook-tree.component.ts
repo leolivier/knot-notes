@@ -1,6 +1,5 @@
-import { Component, OnInit, AfterViewInit, ViewChild, EventEmitter, Input, Output } from '@angular/core';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-import { Location } from '@angular/common';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { TreeComponent, TreeNode, TREE_ACTIONS, KEYS, IActionMapping } from 'angular-tree-component';
 import { Notebook } from '../../notebook/notebook';
@@ -27,7 +26,7 @@ const actionMapping: IActionMapping = {
   templateUrl: './notebook-tree.component.html',
   styleUrls: ['./notebook-tree.component.scss']
 })
-export class NotebookTreeComponent implements OnInit, AfterViewInit {
+export class NotebookTreeComponent implements OnInit {
 
   private _editableNodeId = '';
   private _initialName = '';
@@ -37,10 +36,9 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     actionMapping,
     //    nodeHeight: 23,
     allowDrag: true,
-    allowDrop: true
+    allowDrop: true,
+    useVirtualScroll: false
   };
-
-  @Output() onSelectedNotebook = new EventEmitter<Notebook>();
 
   // inject the TreeComponent
   @ViewChild(TreeComponent)
@@ -49,16 +47,29 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   // the notebook tree
   rootNotebook: Notebook;
 
-  // the currently selected notebook
-  selectedNotebook: Notebook;
+  private _selectedNotebook: Notebook;
+  // inject current selected notebook
+  @Input() set selectedNotebook(nb: Notebook) {
+    if (!nb) { return; }
+    if (!this._selectedNotebook || this._selectedNotebook.id !== nb.id) {
+      this._selectedNotebook = nb;
+      setTimeout(() => {
+        const n = (nb.id === Notebook.rootId) ? this.notebookTree.treeModel.getFirstRoot() : this.notebookTree.treeModel.getNodeById(nb.id);
+        if (n) {
+          n.focus();
+          n.setActiveAndVisible();
+          n.expandAll(); // expand all subtree
+        } else {
+          this.alerter.error('notebook ' + this.noteService.notebookFullName(nb) + ' not found');
+        }
+      });
+    }
+  }
 
-  // injected current selected note
-  @Input() selectedNote: Note;
-
+  get selectedNotebook(): Notebook { return this._selectedNotebook; }
+  
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
-    private location: Location,
     private noteService: DataService,
     private alerter: StatusEmitter) {
     this.noteService.getRootNotebook()
@@ -70,34 +81,12 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {}
 
-  ngAfterViewInit() {
-  }
-
-  // expandAll not taken into account so rewrite it
-  expandAll(nb: Notebook) {
-    const that = this;
-    nb['isExpanded'] = true;
-    if (nb.children && Array.isArray(nb.children)) { nb.children.forEach((c) => that.expandAll(c)); }
-  }
-
-  setSelectedNotebook(nb: Notebook) {
-    this.selectedNotebook = nb;
-    if (!this.selectedNote || this.selectedNote.notebookid != nb.id) { // avoid overriding current note
-      this.onSelectedNotebook.emit(nb);
-    }  
-  }
-
-  selectNotebook(nb: Notebook) {
-    setTimeout(() => {
-      const n = (nb.id === Notebook.rootId) ? this.notebookTree.treeModel.getFirstRoot() : this.notebookTree.treeModel.getNodeById(nb.id);
-      if (n) {
-        n.focus();        
-        n.setActiveAndVisible();
-        n.expandAll(); // expand all subtree
-      } else {
-        this.alerter.error('notebook ' + nb.fullName() + ' not found');
-      }
-    }, 150);
+  selectNode(n: TreeNode) {  // used on node click only
+    if (n.id === Notebook.rootId) {
+      this.router.navigate(['notes']);
+    } else {
+      this.router.navigate(['notebook', n.id]);
+    }
   }
 
   saveRoot() {
@@ -132,7 +121,11 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
   }
 
   toggleEdition(id: string): void {
-    if (this._editableNodeId === id) { this.cancelEdition(id); } else { this.startEdition(id); }
+    if (this._editableNodeId === id) {
+      this.cancelEdition(id);
+    } else {
+      this.startEdition(id);
+    }
   }
 
   endEdition(): void {
@@ -150,26 +143,35 @@ export class NotebookTreeComponent implements OnInit, AfterViewInit {
     }
   }
 
-  addNotebook($event, nodedata: Notebook) {
-    $event.stopPropagation();
+  addNode(node: TreeNode) {
     // create a default new node with a predefined name
     const newnb = new Notebook({ name: 'new notebook' });
     // add it to the children in the current node
-    newnb.parent = nodedata;
-    nodedata.children.push(newnb);
+    let nb = this.rootNotebook.findById(node.id);
+//    newnb.parent = nb;
+    nb.children.push(newnb);
     this.saveRoot();
     // now update display and focus on new node
     this.notebookTree.treeModel.update();
     this.startEdition(newnb.id);
   }
 
-  deleteNotebook($event, nodedata) {
-    // TODO: Add a confirmation before actually deleting.
-    // TODO: If confirmed, ask if notes and subtree must be deleted also
-    // remove in the parent node the node having the current node id
-    nodedata.parent.children = nodedata.parent.children.filter((c) => c.id !== nodedata.id);
-    // update the display
-    this.notebookTree.treeModel.update();
-    this.saveRoot();
+  deleteNode(node: TreeNode) {
+    if (confirm('Are you sure you want to delete this notebook? \n(Warning: Notes inside this notebook will be lost!)')) {
+      // TODO: If confirmed, ask if notes and subtree must be deleted also
+      this.noteService.deleteNotebookContent(node.data);
+      // remove in the parent node the node having the current node id
+      let parent = this.notebookTree.treeModel.getNodeById(node.id).parent;      
+      parent.data.children = parent.data.children.filter((c) => c.id !== node.id);
+      this.saveRoot();
+      // update the display
+      this.notebookTree.treeModel.update();
+      if (this.selectedNotebook.id === node.id) {
+        this.selectNode(parent);
+      } else {
+        const n = this.notebookTree.treeModel.getNodeById(this.selectedNotebook.id);
+        this.selectNode(n); // force re selection of current node
+      }
+    }
   }  
 }

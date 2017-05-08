@@ -1,14 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-
-export class DropdownValue {
-  value: string;
-  label: string;
-
-  constructor(value: string, label: string) {
-    this.value = value;
-    this.label = label;
-  }
-}
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-menu',
@@ -17,8 +7,6 @@ export class DropdownValue {
 })
 export class MenuComponent {
   opened: boolean;
-  @Input() values: DropdownValue[];
+  @Input() items: Map<string, string>;
   @Input() position: string;
-
-  @Output() onSelect = new EventEmitter<string>();
 }

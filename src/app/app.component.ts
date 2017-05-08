@@ -1,6 +1,4 @@
 import { Component, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { Status } from './status-bar/status';
 import { SettingsService } from './services/settings.service';
 
 @Component({
@@ -17,13 +15,8 @@ export class AppComponent {
   ];
 
   constructor(
-    private router: Router,
     private settingsService: SettingsService,
   ) { }
-
-  action(act: string) {
-    this.router.navigate([act]);
-  }
 
   skin() { return this.settingsService.skin(); }
 }

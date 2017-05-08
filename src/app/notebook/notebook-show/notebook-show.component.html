@@ -5,7 +5,7 @@
    </button>
 </div>
 <ul class="items">
-	<li *ngFor="let n of notes" (click)="selectedNote = n" [class.selected-item]="n==selectedNote">
+	<li *ngFor="let n of notes" [routerLink]="['/note/'+n.id]" [class.selected-item]="selectedNote && n.id === selectedNote.id">
 	    <i class="badge fa fa-sticky-note-o"></i>
 	    <span *ngIf="!isEditable(n)" (dblclick)="startEdition(n)" 
 	    	i18n-title title="double clic to edit title. drag&drop notes to change their orders"

@@ -33,7 +33,6 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private contentSubject = new Subject<string>();
 
-//  constructor(private noteService: NoteService) {}
   constructor(
     private noteService: DataService,
     private alerter: StatusEmitter) {}
@@ -55,7 +54,6 @@ export class NoteEditorComponent implements OnInit, AfterViewInit, OnDestroy {
       setup: editor => this.setupTitleEditor(editor),
       init_instance_callback: editor => editor.setContent(this.note.title)
     });
-//    this.titleEditor.setContent(this.note.title);
 
     // init the tinyMCE editor
     tinymce.init({

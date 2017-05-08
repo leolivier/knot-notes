@@ -6,17 +6,11 @@ import { HttpModule } from '@angular/http';
 import { TreeModule } from 'angular-tree-component';
 
 import { AppRoutingModule } from './app-routing.module';
-
-// Imports for loading & configuring the in-memory web api
-// import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
-// import { InMemoryDataService } from './services/in-memory-data.service';
-
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 
 import { DataService } from './services/data.service';
 import { SettingsService } from './services/settings.service';
-// import { NoteService } from './services/note.service';
 import { NoteEditorComponent } from './note-editor/note-editor.component';
 import { NotebookShowComponent } from './notebook/notebook-show/notebook-show.component';
 import { NotebookTreeComponent } from './notebook/notebook-tree/notebook-tree.component';
@@ -31,7 +25,6 @@ import { StatusEmitter } from './status-bar/status';
     BrowserModule,
     FormsModule,
     HttpModule,
- //   InMemoryWebApiModule.forRoot(InMemoryDataService),
     AppRoutingModule,
     TreeModule
   ],

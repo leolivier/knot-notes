@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Note, NoteType } from '../../note';
 import { Notebook } from '../../notebook/notebook';
@@ -18,26 +19,22 @@ export class NotebookShowComponent {
   private _currentNotebook: Notebook;
 
   @Input('notebook') set currentNotebook(notebook: Notebook) {
-    this._currentNotebook = notebook;
     if (!notebook) { return; }
-    this.noteService.getNotebookNotes(notebook.id)
-      .then(notes => this.notes = notes)
-      .catch(reason => this.alerter.error('Error in show notebook: ' + reason));
+    if (!this._currentNotebook || this._currentNotebook.id != notebook.id) {
+      this._currentNotebook = notebook;
+      this.noteService.getNotebookNotes(notebook.id)
+        .then(notes => this.notes = notes)
+        .catch(reason => this.alerter.error('Error in show notebook: ' + reason));
+    }
   }
   get currentNotebook(): Notebook { return this._currentNotebook; }
 
-  @Output() onSelectedNote = new EventEmitter<Note>();
-
   notes: Note[];
-
-  private _selectedNote: Note;
-  get selectedNote(): Note { return this._selectedNote; }
-  set selectedNote(n: Note) {
-    this._selectedNote = n;
-    this.onSelectedNote.emit(n);
-  }
+  // inject current selected note
+  @Input() selectedNote: Note;
 
   constructor(
+    private router: Router,
     private noteService: DataService,
     private alerter: StatusEmitter) {
       this.notes = [];
@@ -45,11 +42,6 @@ export class NotebookShowComponent {
 
   name(): string {
     return (this.currentNotebook ? this.noteService.notebookFullName(this.currentNotebook) : 'no selection');
-  }
-
-  selectNote(note: Note): void {
-    this.selectedNote = note;
-    this.onSelectedNote.emit(note);
   }
 
   isEditable(note: Note): boolean {
@@ -94,30 +86,24 @@ export class NotebookShowComponent {
     this.noteService.saveNote(newn)
           .then(note => {
         this.notes.push(note);
-        this.selectedNote = note;
         this.startEdition(note);
+//        this.selectedNote = note;
+        this.router.navigate(['note', note.id]);
       })
       .catch(reason => this.alerter.error('cannot create note: ' + JSON.stringify(reason)));
   }
+
   deleteNote(note: Note): void {
     this.noteService
         .deleteNote(note.id)
         .then(() => {
           this.notes = this.notes.filter(h => h !== note);
-          if (this.selectedNote === note) { this.selectedNote = null; }
+          if (this.selectedNote === note) { this.router.navigate(['notebook', note.notebookid]); }
         });
   }
-  renameNote(note: Note): void {
-    this.noteService
-        .saveNote(note)
-        .then(() => {
-          this.notes = this.notes.filter(h => h !== note);
-          if (this.selectedNote === note) { this.selectedNote = null; }
-        });
-  }
+
   findById(id: string): Note {
-    const ns = this.notes.filter(n => n.id = id);
-    return (ns.length && ns.length > 0) ? ns[0] : null;
+    return this.notes.find(n => n.id === id);
   }
 
   allowDropNote($event) {
