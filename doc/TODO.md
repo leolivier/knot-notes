@@ -9,6 +9,7 @@
 
 ## New features requests
 * Crypt content when stored in a remote db
+* Enable drag&drop of a note on a notebook
 * Implement tags
 * Add account management (be able to manage several accounts on one CouchDB server)
 * Create a mobile application
