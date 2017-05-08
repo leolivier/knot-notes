@@ -1,24 +1,12 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { TreeComponent, TreeNode, TREE_ACTIONS, KEYS, IActionMapping } from 'angular-tree-component';
+import { TreeComponent, TreeNode, TREE_ACTIONS, KEYS, IActionMapping, ITreeOptions } from 'angular-tree-component';
 import { Notebook } from '../../notebook/notebook';
 import { Note } from '../../note';
 import { NotebookShowComponent } from '../notebook-show/notebook-show.component';
 import { DataService } from '../../services/data.service';
 import { StatusEmitter } from '../../status-bar/status';
-
-const actionMapping: IActionMapping = {
-  mouse: {
-    dblClick: (tree, node, $event) => {
-      // if (node.hasChildren) TREE_ACTIONS.TOGGLE_EXPANDED(tree, node, $event);
-      this.startEdition(node.data.id);
-    },
-  },
-  keys: {
-    127: (tree, node, $event) => this.deleteNotebook($event, node.data),
-  }
-};
 
 @Component({
   moduleId: module.id,
@@ -31,9 +19,23 @@ export class NotebookTreeComponent implements OnInit {
   private _editableNodeId = '';
   private _initialName = '';
 
-  treeOptions = {
+  actionMapping: IActionMapping = {
+    mouse: {
+      dblClick: (tree, node, $event) => {
+        // if (node.hasChildren) TREE_ACTIONS.TOGGLE_EXPANDED(tree, node, $event);
+        this.startEdition(node.data.id);
+      },
+    },
+    keys: {
+      127: (tree, node, $event) => {
+        this.deleteNode(node);
+        $event.stopPropagation();
+      },
+    }
+  }
+  treeOptions: ITreeOptions = {
     // displayField: 'subTitle',
-    actionMapping,
+    actionMapping: this.actionMapping,
     //    nodeHeight: 23,
     allowDrag: true,
     allowDrop: true,
@@ -47,6 +49,8 @@ export class NotebookTreeComponent implements OnInit {
   // the notebook tree
   rootNotebook: Notebook;
 
+  clicked: false;
+  
   private _selectedNotebook: Notebook;
   // inject current selected notebook
   @Input() set selectedNotebook(nb: Notebook) {
@@ -56,6 +60,7 @@ export class NotebookTreeComponent implements OnInit {
       setTimeout(() => {
         const n = (nb.id === Notebook.rootId) ? this.notebookTree.treeModel.getFirstRoot() : this.notebookTree.treeModel.getNodeById(nb.id);
         if (n) {
+          this.notebookTree.sizeChanged();
           n.focus();
           n.setActiveAndVisible();
           n.expandAll(); // expand all subtree
@@ -81,14 +86,17 @@ export class NotebookTreeComponent implements OnInit {
 
   ngOnInit() {}
 
-  selectNode(n: TreeNode) {  // used on node click only
+  selectNode(n: TreeNode) {   
+    // must used on node click only
+    if (!this.clicked) return;
+    else this.clicked = false;
     if (n.id === Notebook.rootId) {
       this.router.navigate(['notes']);
     } else {
       this.router.navigate(['notebook', n.id]);
     }
   }
-
+  
   saveRoot() {
     this.noteService.saveRootNotebook(this.rootNotebook)
       .then(nb => this.rootNotebook = nb)

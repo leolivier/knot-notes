@@ -3,6 +3,7 @@
 			(onActivate)="selectNode($event.node)" [options]="treeOptions" class="notebookTree">
 	<ng-template i18n #loadingTemplate>Loading notebooks, please hold on....</ng-template>
 	<ng-template #treeNodeTemplate let-node="node" let-index="index">
+		<div (click)="clicked=true" (blur)="endEdition()">
 	    <span *ngIf="!isEditable(node.id)" (dblclick)="startEdition(node.data.id)"
 	    	i18n-title title="double clic to edit, drag&amp;drop to change parent">
 	    	{{ node.data.name }}
@@ -20,6 +21,7 @@
 		    	<i class="fa fa-trash-o"></i>
 		    </button>
 		</span>
+		</div>
 	  </ng-template> 
 	</tree-root>
 </div>
