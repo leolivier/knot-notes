@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Directive, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { TreeComponent, TreeNode, TREE_ACTIONS, KEYS, IActionMapping, ITreeOptions } from 'angular-tree-component';
@@ -7,6 +7,15 @@ import { Note } from '../../note';
 import { NotebookShowComponent } from '../notebook-show/notebook-show.component';
 import { DataService } from '../../services/data.service';
 import { StatusEmitter } from '../../status-bar/status';
+
+@Directive({ selector: '[TreeInput]' })
+export class TreeInputDirective {
+  constructor(el: ElementRef) {
+//    setTimeout(() => el.nativeElement.setSelectionRange(0, 9999), 50);
+    el.nativeElement.focus();
+    setTimeout(() => el.nativeElement.select(), 50);
+  }
+}
 
 @Component({
   moduleId: module.id,
@@ -19,23 +28,22 @@ export class NotebookTreeComponent implements OnInit {
   private _editableNodeId = '';
   private _initialName = '';
 
-  actionMapping: IActionMapping = {
-    mouse: {
-      dblClick: (tree, node, $event) => {
-        // if (node.hasChildren) TREE_ACTIONS.TOGGLE_EXPANDED(tree, node, $event);
-        this.startEdition(node.data.id);
-      },
-    },
-    keys: {
-      127: (tree, node, $event) => {
-        this.deleteNode(node);
-        $event.stopPropagation();
-      },
-    }
-  }
   treeOptions: ITreeOptions = {
     // displayField: 'subTitle',
-    actionMapping: this.actionMapping,
+    actionMapping: {
+      mouse: {
+        /* dblClick: (tree, node, $event) => {
+        //     if (node.hasChildren) TREE_ACTIONS.TOGGLE_EXPANDED(tree, node, $event);
+             this.startEdition(node.data.id);
+           }, */
+      },
+      keys: { // does not work!
+        delete: (tree, node, $event) => {
+          $event.stopPropagation();
+          this.deleteNode(node);
+        },
+      }
+    },
     //    nodeHeight: 23,
     allowDrag: true,
     allowDrop: true,
@@ -116,6 +124,14 @@ export class NotebookTreeComponent implements OnInit {
     }
   }
 
+  private focusedInput = null;
+  selectInput(input) {
+    if (!input) return;
+    if (this.focusedInput == input) return; //already focused, return so user can now place cursor at specific point in input.
+    this.focusedInput = input;
+    setTimeout(() => { this.focusedInput.select(); }, 50); //select all text in any field on focus for easy re-entry. Delay sightly to allow focus to "stick" before selecting.
+  }
+
   cancelEdition(id: string): void {
     if (this._editableNodeId === id) {
       const n = this.rootNotebook.findById(this._editableNodeId);
@@ -125,14 +141,6 @@ export class NotebookTreeComponent implements OnInit {
       this._editableNodeId = '';
       this._initialName = '';
       this.notebookTree.treeModel.update();
-    }
-  }
-
-  toggleEdition(id: string): void {
-    if (this._editableNodeId === id) {
-      this.cancelEdition(id);
-    } else {
-      this.startEdition(id);
     }
   }
 

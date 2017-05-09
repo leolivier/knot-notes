@@ -4,23 +4,23 @@
 	<ng-template i18n #loadingTemplate>Loading notebooks, please hold on....</ng-template>
 	<ng-template #treeNodeTemplate let-node="node" let-index="index">
 		<div (click)="clicked=true" (blur)="endEdition()">
-	    <span *ngIf="!isEditable(node.id)" (dblclick)="startEdition(node.data.id)"
-	    	i18n-title title="double clic to edit, drag&amp;drop to change parent">
-	    	{{ node.data.name }}
-	    </span>
-	    <input #notebookInput *ngIf="isEditable(node.id)" [(ngModel)]="node.data.name" 
-	    	i18n-placeholder placeholder="notebook name" 
-	    	i18n-title title="Enter to store change, escape to cancel"
-	    	(keyup)="checkEndEdition($event)" (blur)="endEdition()" (click)="notebookInput.select()">
-	    <span class="an-pull-right">
-		    <button (click)="$event.stopPropagation(); addNode(node);" i18n-title title="create sub-notebook">
-		    	<i class="fa fa-plus-square"></i>
-		    </button>
-		    <button *ngIf="node.id!=='rootNotebook'" 
-		    	(click)="$event.stopPropagation(); deleteNode(node);" i18n-title title="delete notebook">
-		    	<i class="fa fa-trash-o"></i>
-		    </button>
-		</span>
+			<span *ngIf="!isEditable(node.id)" (dblclick)="startEdition(node.data.id);selectInput(notebookInput)"
+				i18n-title title="double clic to edit, drag&amp;drop to change parent">
+				{{ node.data.name }}
+			</span>
+			<input #notebookInput TreeInput *ngIf="isEditable(node.id)" [(ngModel)]="node.data.name" autofocus="true"
+				i18n-placeholder placeholder="notebook name" 
+				i18n-title title="Enter to store change, escape to cancel"
+				(keyup)="checkEndEdition($event)" (blur)="endEdition()" (focus)="selectInput(notebookInput)">
+			<span class="an-pull-right">
+				<button (click)="$event.stopPropagation(); addNode(node);" i18n-title title="create sub-notebook">
+					<i class="fa fa-plus-square"></i>
+				</button>
+				<button *ngIf="node.id!=='rootNotebook'" 
+					(click)="$event.stopPropagation(); deleteNode(node);" i18n-title title="delete notebook">
+					<i class="fa fa-trash-o"></i>
+				</button>
+			</span>
 		</div>
 	  </ng-template> 
 	</tree-root>
