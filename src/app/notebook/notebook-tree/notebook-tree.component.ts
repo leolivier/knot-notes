@@ -25,8 +25,9 @@ export class TreeInputDirective {
 })
 export class NotebookTreeComponent implements OnInit {
 
-  private _editableNodeId = '';
+        private _editedNode: TreeNode = null;
   private _initialName = '';
+  private _newNode: TreeNode = null;
 
   treeOptions: ITreeOptions = {
     // displayField: 'subTitle',
@@ -106,22 +107,21 @@ export class NotebookTreeComponent implements OnInit {
   }
   
   saveRoot() {
+    this._newNode = null;
     this.noteService.saveRootNotebook(this.rootNotebook)
       .then(nb => this.rootNotebook = nb)
       .catch(reason => this.alerter.error(reason));
   }
 
-  isEditable(id: string): boolean {
-    return (id === this._editableNodeId);
+  isEditable(node: TreeNode): boolean {
+    return (this._editedNode && node.id === this._editedNode.id);
   }
 
-  startEdition(id: string): void {
-    this._editableNodeId = id;
-    const n = this.notebookTree.treeModel.getNodeById(id);
-    if (n) {
-      this._initialName = n.data.name;
-      n.setActiveAndVisible();
-    }
+  startEdition(node: TreeNode) {
+    this._editedNode = node;
+    this._initialName = node.data.name;
+    node.focus();
+    node.setActiveAndVisible();
   }
 
   private focusedInput = null;
@@ -132,20 +132,22 @@ export class NotebookTreeComponent implements OnInit {
     setTimeout(() => { this.focusedInput.select(); }, 50); //select all text in any field on focus for easy re-entry. Delay sightly to allow focus to "stick" before selecting.
   }
 
-  cancelEdition(id: string): void {
-    if (this._editableNodeId === id) {
-      const n = this.rootNotebook.findById(this._editableNodeId);
-      n.name = this._initialName;
-      const nt = this.notebookTree.treeModel.getNodeById(id);
-      nt.data.name = this._initialName;
-      this._editableNodeId = '';
-      this._initialName = '';
-      this.notebookTree.treeModel.update();
-    }
+  cancelEdition() {
+    if (this._newNode) { // cancel and not yet saved => delete only in tree
+      let parent = this.notebookTree.treeModel.getNodeById(this._newNode.id).parent;
+      parent.data.children = parent.data.children.filter((c) => c.id !== this._newNode.id);
+      this.selectNode(parent, true); // and route to parent
+    } else {
+      this._editedNode.data.name = this._initialName;
+    }  
+    this._editedNode = null;
+    this._initialName = '';
+    this.notebookTree.treeModel.update();
   }
 
   endEdition(): void {
-    this._editableNodeId = '';
+    if (this._editedNode.data.name === '') this.cancelEdition();
+    this._editedNode = null;
     this._initialName = '';
     this.saveRoot();
     // now update display and focus on new node
@@ -155,21 +157,20 @@ export class NotebookTreeComponent implements OnInit {
   checkEndEdition($event): void {
     switch ($event.key) {
       case 'Enter': this.endEdition(); break;
-      case 'Escape': this.cancelEdition(this._editableNodeId); break;
+      case 'Escape': this.cancelEdition(); break;
     }
   }
 
   addNode(node: TreeNode) {
-    // create a default new node with a predefined name
-    const newnb = new Notebook({ name: 'new notebook' });
+    // create a default new node with an empty name
+    const newnb = new Notebook({ name: '' });
     // add it to the children in the current node
     let nb = this.rootNotebook.findById(node.id);
-//    newnb.parent = nb;
     nb.children.push(newnb);
-    this.saveRoot();
     // now update display and focus on new node
     this.notebookTree.treeModel.update();
-    this.startEdition(newnb.id);
+    this._newNode = this.notebookTree.treeModel.getNodeById(newnb.id)
+    this.startEdition(this._newNode);
   }
 
   deleteNode(node: TreeNode) {

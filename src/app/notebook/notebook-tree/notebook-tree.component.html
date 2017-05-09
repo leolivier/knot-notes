@@ -4,11 +4,11 @@
 	<ng-template i18n #loadingTemplate>Loading notebooks, please hold on....</ng-template>
 	<ng-template #treeNodeTemplate let-node="node" let-index="index">
 		<div (click)="clicked=true" (blur)="endEdition()">
-			<span *ngIf="!isEditable(node.id)" (dblclick)="startEdition(node.data.id);selectInput(notebookInput)"
+			<span *ngIf="!isEditable(node)" (dblclick)="startEdition(node);selectInput(notebookInput)"
 				i18n-title title="double clic to edit, drag&amp;drop to change parent">
 				{{ node.data.name }}
 			</span>
-			<input #notebookInput TreeInput *ngIf="isEditable(node.id)" [(ngModel)]="node.data.name" autofocus="true"
+			<input #notebookInput TreeInput *ngIf="isEditable(node)" [(ngModel)]="node.data.name" autofocus="true"
 				i18n-placeholder placeholder="notebook name" 
 				i18n-title title="Enter to store change, escape to cancel"
 				(keyup)="checkEndEdition($event)" (blur)="endEdition()" (focus)="selectInput(notebookInput)">
