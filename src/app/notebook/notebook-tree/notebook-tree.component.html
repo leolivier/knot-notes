@@ -13,11 +13,11 @@
 	    	i18n-title title="Enter to store change, escape to cancel"
 	    	(keyup)="checkEndEdition($event)" (blur)="endEdition()" (click)="notebookInput.select()">
 	    <span class="an-pull-right">
-		    <button (click)="addNode(node); $event.stopPropagation();" i18n-title title="create sub-notebook">
+		    <button (click)="$event.stopPropagation(); addNode(node);" i18n-title title="create sub-notebook">
 		    	<i class="fa fa-plus-square"></i>
 		    </button>
 		    <button *ngIf="node.id!=='rootNotebook'" 
-		    	(click)="deleteNode(node); $event.stopPropagation();" i18n-title title="delete notebook">
+		    	(click)="$event.stopPropagation(); deleteNode(node);" i18n-title title="delete notebook">
 		    	<i class="fa fa-trash-o"></i>
 		    </button>
 		</span>
