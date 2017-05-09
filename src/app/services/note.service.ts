@@ -46,7 +46,7 @@ export class NoteService {
     const url = `${this.noteUrl}?notebookid=${notebookid}`;
     return this.http.get(url)
       .toPromise()
-      .then(response => response.json().data as Note[])
+      .then(response => <Note[]>(response.json().data))
       .catch(this.handleError);
   }
 
@@ -54,7 +54,7 @@ export class NoteService {
     const url = `${this.noteUrl}/${id}`;
     return this.http.get(url)
       .toPromise()
-      .then(response => response.json().data as Note)
+      .then(response => <Note>(response.json().data))
       .catch(this.handleError);
   }
 

@@ -10,7 +10,7 @@ const StatusClasses = [ 'error', 'warning', 'info', 'sync']; // must match Statu
 })
 export class StatusBarComponent implements OnInit {
   status = new Status;
-  syncState = {message: 'None', kind: StatusKind.Sync} as Status;
+  syncState = <Status>{message: 'None', kind: StatusKind.Sync};
 
   constructor(private alerter: StatusEmitter) {}
 

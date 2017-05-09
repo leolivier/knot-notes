@@ -117,7 +117,7 @@ export class Crypto {
           // returns an ArrayBuffer containing the encrypted data
           // const res = new Uint8Array(encrypted);
           console.log(new Uint8Array(encrypted));
-          resolve({data: encrypted, iv: iv } as CryptObj);
+          resolve(<CryptObj>{data: encrypted, iv: iv });
         },
           err => this.handleError(err, reject));
     });

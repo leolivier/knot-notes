@@ -41,7 +41,7 @@ export class SettingsService {
     const that = this;
     return new Promise((resolve, reject) => {
       that.db.get(settings_id).then(doc => {
-        that.settings = doc as Settings;
+        that.settings = <Settings>doc;
         if (!that.settings.remoteDBSettings) { that.settings.remoteDBSettings = new RemoteDBSettings(); }
         resolve(that.settings);
       }).catch (err => {
@@ -72,6 +72,6 @@ export class SettingsService {
   }
 
   handleChange(change) {
-//    this.settings = change.doc as Settings;
+//    this.settings = <Settings>change.doc;
   }
 }

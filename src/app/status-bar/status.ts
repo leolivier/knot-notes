@@ -15,7 +15,7 @@ export class StatusEmitter {
   emitter = new EventEmitter<Status> ();
 
   private emit(message: string, kind: StatusKind) {
-    this.emitter.emit({message: message, kind: kind} as Status);
+    this.emitter.emit(<Status>{message: message, kind: kind});
     console.log(message);
   }
 
