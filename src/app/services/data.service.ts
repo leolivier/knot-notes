@@ -85,7 +85,7 @@ export class DataService {
         .on('error', err => that.alerter.syncState('error: ' + err))
         .on('change', info => this.handleChange(info))
   // replication paused (e.g. replication up to date, user went offline)
-        .on('paused', err => this.alerter.syncState('paused'))
+  //      .on('paused', err => this.alerter.syncState('paused'))
   // replicate resumed (e.g. new changes replicating, user went back online)
         .on('active', () => this.alerter.syncState('active'))
   // a document failed to replicate (e.g. due to permissions)
@@ -188,16 +188,23 @@ export class DataService {
     return this._lookNbName(this.rootNotebook, nb);
   }
   
+  private saveRunning = false;
   saveRootNotebook(root: Notebook): Promise<Notebook> {
+    if (this.saveRunning) return Promise.reject("Saving root already running"); 
+    this.saveRunning = true;
     const that = this;
     this.rootNotebook = root;
+    //console.log("before save root rev=" + root._rev);
     const o = JSON.parse(root.toJSON());
     return new Promise((resolve, reject) => {
       this.db.put(o).then(response => {
         if (response && response.ok) {
           // be sure to refresh rev number
           root._rev = response.rev;
+          //console.log("after save root new rev=" + root._rev);
           resolve(root);
+          that.saveRunning = false;
+          that.alerter.info("Notebooks tree saved");
         }
       }).catch(error => that.handleError(error, reject))
      });

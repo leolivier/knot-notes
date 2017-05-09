@@ -9,10 +9,7 @@ export class Notebook implements INotebook {
   set id(id: string) { this._id = id; }
   private _id: string;
 
-  private _rev: string;
-  // only for data.service
-  set rev(rev: string) { this._rev = rev; }
-  get rev(): string { return this._rev; }
+  _rev: string;
 
   constructor(nb: Object) {
     if (nb) { this.updateFrom(nb); }
