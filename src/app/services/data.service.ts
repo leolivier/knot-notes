@@ -14,6 +14,7 @@ export class DataService {
   private db: any;
   private remote: string;
   private sync;
+  private rootLoaded = false;
 
   rootNotebook: Notebook;
   notes: Note[];
@@ -104,7 +105,7 @@ export class DataService {
     } else if (this.rootNotebook && this.rootNotebook.id === change.id) {
       if (change.deleted) {
         this.alerter.error('Root notebook deleted!!!');
-      } else if (this.rootNotebook.rev !== change.doc._rev) { // do nothing if same rev
+      } else if (this.rootNotebook._rev !== change.doc._rev) { // do nothing if same rev
         this.rootNotebook.updateFrom(change.doc);
       }
     } else {
@@ -140,7 +141,7 @@ export class DataService {
 
   private _getRootNotebook(resolve, reject) {
     const that = this;
-    if (this.rootNotebook) { resolve(this.rootNotebook); } 
+    if (this.rootNotebook && this.rootLoaded) { resolve(this.rootNotebook); } 
     
     that.db.get(Notebook.rootId).then(doc => {
       if (that.rootNotebook) {
@@ -148,6 +149,7 @@ export class DataService {
       } else {
         that.rootNotebook = new Notebook(doc);
       }
+      that.rootLoaded = true;
       resolve(that.rootNotebook);
     }).catch((error) => {
       if (error.reason === 'missing') {
@@ -163,17 +165,17 @@ export class DataService {
 
   getRootNotebook(): Promise<Notebook> {
     const that = this;
-    if (this.rootNotebook) { return Promise.resolve(this.rootNotebook); } 
+    if (this.rootNotebook && this.rootLoaded) { return Promise.resolve(this.rootNotebook); } 
     return new Promise((resolve, reject) => {
       that._getRootNotebook(resolve, reject);
     });
   }
 
-  private lookNbName(root: Notebook, lookFor: Notebook): string {
+  private _lookNbName(root: Notebook, lookFor: Notebook): string {
     if (root.id === lookFor.id) {
       return lookFor.name;
     } else for (var c of root.children) {
-      const r = this.lookNbName(c, lookFor);
+      const r = this._lookNbName(c, lookFor);
       if (r) {
         return (root.id === Notebook.rootId ? '' : root.name) + '/' + r;
       }
@@ -183,7 +185,7 @@ export class DataService {
   
   notebookFullName(n: string | Notebook): string {
     var nb: Notebook = (n instanceof Notebook) ? n : this.rootNotebook.findById(n);
-    return this.lookNbName(this.rootNotebook, nb);
+    return this._lookNbName(this.rootNotebook, nb);
   }
   
   saveRootNotebook(root: Notebook): Promise<Notebook> {
@@ -194,13 +196,18 @@ export class DataService {
       this.db.put(o).then(response => {
         if (response && response.ok) {
           // be sure to refresh rev number
-          root.rev = response.rev;
+          root._rev = response.rev;
           resolve(root);
         }
       }).catch(error => that.handleError(error, reject))
      });
   }
-
+  // to be used where sure that root notebook is already loaded
+  private _getNotebook(notebookid: string): Notebook {
+    if (!this.rootLoaded) throw "root notebook not loaded!";
+    return this.rootNotebook.findById(notebookid);    
+  } 
+  
   getNotebook(notebookid: string): Promise<Notebook> {
     const that = this;
     return new Promise((resolve, reject) => {
@@ -211,29 +218,41 @@ export class DataService {
     });
   }
 
+  private _loadNotebookNotes(notebookid: string, resolve, reject) {
+    const that = this;
+    this.db.createIndex({
+      index: { fields: ['notebookid'] }
+    }).then(() => {
+      that.db.find({
+        selector: {
+          $and: [
+            { notebookid: { $exists: true } },
+            { notebookid: { $eq: notebookid } },
+            { order: { $gt: true } }
+          ]
+        },
+        //            sort: [{'order': 'desc'}]
+      }).then(result => {
+        that.notes = [];  // reset notes
+        result.docs.map((doc) => { that.notes.push(new Note(doc)); });
+        that.notes.sort((a, b) => a.order - b.order);
+        resolve(that.notes);
+      });
+    });
+  }
+  
+  private _getNotebookNotes(notebookid: string): Promise<Note[]> {
+    const that = this;
+    return new Promise((resolve, reject) => that._loadNotebookNotes(notebookid, resolve, reject));
+  }
+
   getNotebookNotes(notebookid: string): Promise<Note[]> {
     const that = this;
     return new Promise((resolve, reject) => {
-      this.getNotebook(notebookid).then(nb => {  // ensure root note book loaded first and note book id exists
-        that.db.createIndex({
-          index: {fields: ['notebookid']}
-        }).then(function () {
-          that.db.find ({
-            selector: {
-              $and: [
-                {notebookid: {$exists: true}},
-                {notebookid: {$eq: notebookid}},
-                {order: {$gt: true}}
-              ]},
-//            sort: [{'order': 'desc'}]
-          }).then (result => {
-            that.notes = [];  // reset notes
-            that.notes.sort((a, b) => a.order - b.order);
-            result.docs.map((doc) => { that.notes.push(new Note(doc)); });
-            resolve(that.notes);
-          }).catch((error) => that.handleError("cannot load notebook '" + nb.name + "' notes: " + error, reject));
-        });
-      }).catch(err => this.handleError(err, reject));
+      // ensure root note book loaded first and note book id exists
+      this.getNotebook(notebookid)
+        .then(nb => that._loadNotebookNotes(notebookid, resolve, reject))
+        .catch(err => this.handleError(err, reject));
     });
   }
 
@@ -309,7 +328,7 @@ export class DataService {
     const that = this;
     let ps: Promise<any>[] = [];
     ps.push(new Promise((resolve, reject) => {
-      that.getNotebookNotes(notebook.id).then(notes => {
+      that._getNotebookNotes(notebook.id).then(notes => {
         if (notes.length > 0) {
           notes.forEach(n => n['_deleted'] = true);
           that.db.bulkDocs(notes)
