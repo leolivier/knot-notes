@@ -16,17 +16,17 @@ Don't hesitate to create features requests or issues on [GitHub](https://github.
 See [TODO.md](doc/TODO.md) to check what's in the pipe currently.
 See [RELEASE.md](doc/RELEASE.md) to see what has been delivered 
 
-__WARNING: This is still an alpha release!__
+__First Release Candidate!__
 ------------
 
 ##Installing 
 
-##Local database install only
+###Local database install only
 
 *With this kind of install, you can save your notes inside your browser only. You can't share your notes in another browser or on another device.*
 
 * You must have an http server installed (Apache, NGinx, ...)
-* Download the [1.0.alpha-3 release](https://github.com/leolivier/knot-notes/raw/master/knot-notes-1.0.0-a3.zip) zip file, 
+* Download the [1.0.rc1 release](https://github.com/leolivier/knot-notes/raw/master/knot-notes-1.0-rc1.zip) zip file, 
 unzip it in a new directory.
 * If necessary, manage the server configuration so that the new directory can be accessed and manage fallback to index.html (see [server configuration](https://angular.io/docs/ts/latest/guide/deployment.html#!#fallback) on Angular documentation). 
 * If you serve the application from a sub directory of your server root directory (i.e. the url is not at the root of the domain), you must change the base href in index.html to reflect the correct base.
