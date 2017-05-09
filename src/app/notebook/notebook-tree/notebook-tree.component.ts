@@ -86,9 +86,9 @@ export class NotebookTreeComponent implements OnInit {
 
   ngOnInit() {}
 
-  selectNode(n: TreeNode) {   
-    // must used on node click only
-    if (!this.clicked) return;
+  selectNode(n: TreeNode, force = false) {   
+    // must used on node click only or if force=true
+    if (!this.clicked && !force) return;
     else this.clicked = false;
     if (n.id === Notebook.rootId) {
       this.router.navigate(['notes']);
@@ -166,6 +166,7 @@ export class NotebookTreeComponent implements OnInit {
 
   deleteNode(node: TreeNode) {
     if (confirm('Are you sure you want to delete this notebook? \n(Warning: Notes inside this notebook will be lost!)')) {
+      const selectedNode = this.notebookTree.treeModel.getNodeById(this.selectedNotebook.id)
       // TODO: If confirmed, ask if notes and subtree must be deleted also
       this.noteService.deleteNotebookContent(node.data);
       // remove in the parent node the node having the current node id
@@ -174,11 +175,8 @@ export class NotebookTreeComponent implements OnInit {
       this.saveRoot();
       // update the display
       this.notebookTree.treeModel.update();
-      if (this.selectedNotebook.id === node.id) {
-        this.selectNode(parent);
-      } else {
-        const n = this.notebookTree.treeModel.getNodeById(this.selectedNotebook.id);
-        this.selectNode(n); // force re selection of current node
+      if (this.selectedNotebook.id === node.id || selectedNode.isDescendantOf(node)) {
+        this.selectNode(parent, true);
       }
     }
   }  
