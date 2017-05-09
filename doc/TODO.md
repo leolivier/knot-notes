@@ -2,10 +2,11 @@
 
 ## Enhancements requests
 * Internationalization
-* Manage confirmation before removing notes and notebooks
 * Test on Safari, Opera
 * Better management of skins (load only one skin at a time instead of all)
 * Better synchronization management of the notebook tree (when sync starts, the local version erases the one stored in database, possibly leading to losing access to notebooks)
+* When deleting a notebook, propose to attach notes and sub-books to the parent.
+
 
 ## New features requests
 * Crypt content when stored in a remote db

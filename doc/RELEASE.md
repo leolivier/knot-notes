@@ -1,5 +1,11 @@
 # RELEASES 
 
+## 1.0-rc1
+* First release candidate
+* Fixed a lot of bugs
+* Refactored a lot of things
+* Manage confirmation before removing notes and notebooks
+
 ## 1.0-alpha3
 * Manages deep links correctly so that url containing note or notebook ids work and show the note or notebook. This allows user to share their notes or notebooks with other users by sending a link.  
 * Fixed a bug at first usage
